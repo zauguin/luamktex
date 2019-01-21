@@ -43,7 +43,7 @@ const char *font_identity_strings[] = {
 };
 
 const char *font_format_strings[] = {
-    "unknown", "type1", "type3", "truetype", "opentype", NULL
+    "unknown", "type1", "type3", "truetype", "opentype", "node", NULL
 };
 
 const char *font_embedding_strings[] = {
@@ -198,7 +198,9 @@ static void font_char_to_lua(lua_State * L, internal_font_number f, charinfo * c
     if (get_charinfo_rp(co) != 0) {
         dump_intfield(L,right_protruding,get_charinfo_rp(co));
     }
-    if (font_encodingbytes(f) == 2) {
+    if (font_format(f) == node_format) {
+        dump_intfield(L,node,get_charinfo_index(co));
+    } else if (font_encodingbytes(f) == 2) {
         dump_intfield(L,index,get_charinfo_index(co));
     }
     if (get_charinfo_name(co) != NULL) {
@@ -1130,7 +1132,7 @@ static void store_math_kerns(lua_State * L, int index, charinfo * co, int id)
     lua_pop(L, 1);
 }
 
-static void font_char_from_lua(lua_State * L, internal_font_number f, int i, int *l_fonts, boolean has_math)
+static void font_char_from_lua(lua_State * L, internal_font_number f, int i, int *l_fonts, boolean has_math, boolean is_nodefont)
 {
     int k, r, t, lt, u, n;
     charinfo *co;
@@ -1157,7 +1159,11 @@ static void font_char_from_lua(lua_State * L, internal_font_number f, int i, int
         set_charinfo_italic(co, j);
         j = lua_numeric_field_by_index(L, lua_key_index(vert_italic), 0);
         set_charinfo_vert_italic(co, j);
-        j = lua_numeric_field_by_index(L, lua_key_index(index), 0);
+        if (is_nodefont) {
+            j = lua_numeric_field_by_index(L, lua_key_index(node), 0);
+        } else {
+            j = (unsigned short) lua_numeric_field_by_index(L, lua_key_index(index), 0);
+        }
         set_charinfo_index(co, j);
         j = lua_numeric_field_by_index(L, lua_key_index(expansion_factor), 1000);
         set_charinfo_ef(co, j);
@@ -1455,6 +1461,7 @@ int font_from_lua(lua_State * L, int f)
     int *l_fonts = NULL;
     int save_ref ;
     boolean no_math = false;
+    boolean is_nodefont = false;
     /*tex Will we save a cache of the \LUA\ table? */
     save_ref = 1;
     ss = NULL;
@@ -1545,6 +1552,9 @@ int font_from_lua(lua_State * L, int f)
     set_font_type(f, i);
     i = n_enum_field(L, lua_key_index(format), unknown_format, font_format_strings);
     set_font_format(f, i);
+    if (i == node_format) {
+      is_nodefont = true;
+    }
     i = n_enum_field(L, lua_key_index(writingmode), unknown_writingmode, font_writingmode_strings);
     set_font_writingmode(f, i);
     i = n_enum_field(L, lua_key_index(identity), unknown_identity, font_identity_strings);
@@ -1664,14 +1674,14 @@ int font_from_lua(lua_State * L, int f)
                 if (lt == LUA_TNUMBER) {
                     i = (int) lua_tointeger(L, -2);
                     if (i >= 0) {
-                        font_char_from_lua(L, f, i, l_fonts, !no_math);
+                        font_char_from_lua(L, f, i, l_fonts, !no_math, is_nodefont);
                     }
                 } else if (lt == LUA_TSTRING) {
                     const char *ss1 = lua_tostring(L, -2);
                     if (lua_key_eq(ss1, left_boundary)) {
-                        font_char_from_lua(L, f, left_boundarychar, l_fonts, !no_math);
+                        font_char_from_lua(L, f, left_boundarychar, l_fonts, !no_math, is_nodefont);
                     } else if (lua_key_eq(ss1, right_boundary)) {
-                        font_char_from_lua(L, f, right_boundarychar, l_fonts, !no_math);
+                        font_char_from_lua(L, f, right_boundarychar, l_fonts, !no_math, is_nodefont);
                     }
                 }
                 lua_pop(L, 1);
@@ -1844,7 +1854,7 @@ int characters_from_lua(lua_State * L, int f)
                             set_charinfo_vert_variants(co, NULL);
                             set_charinfo_hor_variants(co, NULL);
                         }
-                        font_char_from_lua(L, f, i, l_fonts, !no_math);
+                        font_char_from_lua(L, f, i, l_fonts, !no_math, font_format(f) == node_format);
                     }
                 }
                 lua_pop(L, 1);

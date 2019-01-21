@@ -196,7 +196,7 @@ void ship_out(PDF pdf, halfword p, shipping_mode_e shipping_mode)
         cur.v = height(p);
         synch_pos_with_cur(pdf->posstruct, &refpoint, cur);
     } else {
-        /*tex We're shipping out a |/Form|. */
+        /*tex We're shipping out a |/Form| or a node font glyph. */
         pdf->posstruct->dir = box_dir(p);
         switch (pdf->posstruct->dir) {
             case dir_TLT:
@@ -217,11 +217,11 @@ void ship_out(PDF pdf, halfword p, shipping_mode_e shipping_mode)
         switch (pdf->posstruct->dir) {
             case dir_TLT:
                 pdf->posstruct->pos.h = 0;
-                pdf->posstruct->pos.v = depth(p);
+                pdf->posstruct->pos.v = global_shipping_mode == SHIPPING_FORM ? depth(p) : 0;
                 break;
             case dir_TRT:
                 pdf->posstruct->pos.h = width(p);
-                pdf->posstruct->pos.v = depth(p);
+                pdf->posstruct->pos.v = global_shipping_mode == SHIPPING_FORM ? depth(p) : 0;
                 break;
             case dir_LTL:
                 pdf->posstruct->pos.h = height(p);
@@ -233,7 +233,7 @@ void ship_out(PDF pdf, halfword p, shipping_mode_e shipping_mode)
                 break;
             default:
                 pdf->posstruct->pos.h = 0;
-                pdf->posstruct->pos.v = depth(p);
+                pdf->posstruct->pos.v = global_shipping_mode == SHIPPING_FORM ? depth(p) : 0;
                 normal_warning("pdf backend","bad page direction, assuming TLT, case 5");
         }
     }

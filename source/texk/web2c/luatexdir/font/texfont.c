@@ -564,7 +564,7 @@ void set_charinfo_used(charinfo * ci, scaled val)
 
 void set_charinfo_index(charinfo * ci, scaled val)
 {
-    ci->index = (unsigned short) val;
+    ci->index = val;
 }
 
 void set_charinfo_name(charinfo * ci, char *val)

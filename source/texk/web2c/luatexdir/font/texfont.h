@@ -85,7 +85,7 @@ typedef struct charinfo {
     liginfo *ligatures;         /* ligature items */
     kerninfo *kerns;            /* kern items */
     eight_bits *packets;        /* virtual commands.  */
-    unsigned short index;       /* CID index */
+    halfword index;             /* CID index */
     int remainder;              /* spare value for odd items, could be union-ed with extensible */
     scaled width;               /* width */
     scaled height;              /* height */
@@ -190,6 +190,7 @@ typedef struct texfont {
 
     int _pdf_font_num;          /* maps to a PDF resource ID */
     str_number _pdf_font_attr;  /* pointer to additional attributes */
+    struct avl_table *_pdf_resources;
 } texfont;
 
 typedef enum {
@@ -204,6 +205,7 @@ typedef enum {
     type3_format,
     truetype_format,
     opentype_format,
+    node_format,
 } font_formats;
 
 typedef enum {
@@ -384,6 +386,9 @@ boolean cmp_font_area(int, str_number);
 
 #  define pdf_font_attr(a)               font_tables[a]->_pdf_font_attr
 #  define set_pdf_font_attr(a,b)         pdf_font_attr(a) = b
+
+#  define pdf_font_resources(a)          font_tables[a]->_pdf_resources
+#  define set_pdf_font_resources(a,b)    pdf_font_resources(a) = b
 
 #  define left_boundarychar  -1
 #  define right_boundarychar -2

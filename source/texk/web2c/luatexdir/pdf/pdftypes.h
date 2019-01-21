@@ -218,11 +218,12 @@ typedef enum {
     obj_type_bead = 15,         /* thread bead objects */
     obj_type_beads = 16,        /* /B objects (array of bead objects) */
     obj_type_objstm = 17,       /* /ObjStm objects */
-    obj_type_others = 18        /* any other objects (also not linked in any list) */
+    obj_type_glyph = 18,        /* Type 3 charstring objects */
+    obj_type_others = 19        /* any other objects (also not linked in any list) */
 } pdf_obj_type;
 
 #  define HEAD_TAB_MAX      6   /* obj_type_thread */
-#  define PDF_OBJ_TYPE_MAX 18   /* obj_type_others */
+#  define PDF_OBJ_TYPE_MAX 19   /* obj_type_others */
 
 typedef struct pdf_resource_struct_ {
     struct avl_table *resources_tree;

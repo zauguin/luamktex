@@ -165,6 +165,9 @@ void pdf_init_font(PDF pdf, internal_font_number f)
         }
         i = obj_link(pdf, i);
     }
+    if(font_format(f) == node_format) {
+      set_pdf_font_resources(f, NULL);
+    }
     /*tex Create a new font object for |f|: */
     l = pdf_create_obj(pdf, obj_type_font, f);
     pdf_use_font(f, l);
