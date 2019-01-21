@@ -21,6 +21,7 @@
 #ifndef PDFGLYPH_H
 #  define PDFGLYPH_H
 
+void pdf_ship_node_char(PDF pdf, internal_font_number f, int c);
 void end_chararray(PDF pdf);
 void end_charmode(PDF pdf);
 void pdf_place_glyph(PDF pdf, internal_font_number f, int c, int ex);

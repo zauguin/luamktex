@@ -206,6 +206,46 @@ static boolean writepk(PDF pdf, internal_font_number f)
     return true;
 }
 
+static boolean writet3nodes(PDF pdf, internal_font_number f)
+{
+    shipping_mode_e save_shipping_mode = global_shipping_mode;
+    int save_pdf_cur_form = pdf_cur_form;
+    scaledpos save_cur_page_size = pdf->page_size;
+    global_shipping_mode = SHIPPING_FORM;
+    /* int llx, lly, urx, ury; */
+    pdffloat pf;
+    // How to identify null glyphs?
+    /* boolean is_null_glyph; */
+    t3_image_used = false;
+    is_pk_font = false;
+    t3_font_scale = by_one_bp / font_dsize(f);
+    for (int i = font_bc(f); i <= font_ec(f); i++) {
+        if (!pdf_char_marked(f, i))
+            continue;
+        t3_char_widths[i] = (float) divide_scaled(ext_xn_over_d(get_charwidth(f, i), font_dsize(f), font_size(f)),one_hundred_bp,pk_decimal_digits(pdf,2));
+        // TODO: At some point we should add bounding box options
+        /* llx = -cd.xoff; */
+        /* lly = cd.yoff - cd.cheight + 1; */
+        /* urx = cd.cwidth + llx + 1; */
+        /* ury = cd.cheight + lly; */
+        /* update_bbox(llx, lly, urx, ury, t3_glyph_num == 0); */
+        t3_glyph_num++;
+        printf("DEBUG!!!\n\n%i\n\n", char_index(f, i));
+        t3_char_procs[i] = char_index(f, i);
+        /* setpdffloat(pf, (int64_t) t3_char_widths[i], 2); */
+        /* print_pdffloat(pdf, pf); */
+        /* pdf_printf(pdf, " 0 %i %i %i %i d1\n", (int) llx, (int) lly, (int) urx, (int) ury); */
+        /* pdf_printf(pdf, " 0 d0\n"); */
+        /* if (is_null_glyph) */
+            /* goto end_stream; */
+        /* pdf_printf(pdf, "q\n") */
+    }
+    pdf->page_size = save_cur_page_size;
+    pdf_cur_form = save_pdf_cur_form;
+    global_shipping_mode = save_shipping_mode;
+    return true;
+}
+
 void writet3(PDF pdf, internal_font_number f)
 {
     int i;
@@ -222,11 +262,13 @@ void writet3(PDF pdf, internal_font_number f)
         t3_char_widths[i] = 0;
     }
     is_pk_font = false;
-    xfree(t3_buffer);
-    t3_curbyte = 0;
-    t3_size = 0;
-    if (!writepk(pdf, f))
-        return;
+    if (font_format(f) == node_format) {
+      if (!writet3nodes(pdf, f))
+          return;
+    } else {
+      if (!writepk(pdf, f))
+          return;
+    }
     for (i = font_bc(f); i <= font_ec(f); i++)
         if (pdf_char_marked(f, i))
             break;
@@ -263,13 +305,15 @@ void writet3(PDF pdf, internal_font_number f)
         pdf_printf(pdf, "%g 0 0 %g 0 0", (double) t3_font_scale, (double) t3_font_scale);
         pdf_end_array(pdf);
     }
-    pdf_add_name(pdf, font_key[FONTBBOX1_CODE].pdfname);
-    pdf_begin_array(pdf);
-    pdf_add_int(pdf, (int) t3_b0);
-    pdf_add_int(pdf, (int) t3_b1);
-    pdf_add_int(pdf, (int) t3_b2);
-    pdf_add_int(pdf, (int) t3_b3);
-    pdf_end_array(pdf);
+    if (is_pk_font) {
+        pdf_add_name(pdf, font_key[FONTBBOX1_CODE].pdfname);
+        pdf_begin_array(pdf);
+        pdf_add_int(pdf, (int) t3_b0);
+        pdf_add_int(pdf, (int) t3_b1);
+        pdf_add_int(pdf, (int) t3_b2);
+        pdf_add_int(pdf, (int) t3_b3);
+        pdf_end_array(pdf);
+    }
     pdf_add_name(pdf, "Resources");
     pdf_begin_dict(pdf);
     pdf_add_name(pdf, "ProcSet");
@@ -293,16 +337,10 @@ void writet3(PDF pdf, internal_font_number f)
     /*tex The |Widths| array: */
     pdf_begin_obj(pdf, wptr, OBJSTM_ALWAYS);
     pdf_begin_array(pdf);
-    if (is_pk_font) {
-        for (i = first_char; i <= last_char; i++) {
-            setpdffloat(pf, (int64_t) t3_char_widths[i], 2);
-            print_pdffloat(pdf, pf);
-            pdf_out(pdf, ' ');
-        }
-    } else {
-        for (i = first_char; i <= last_char; i++) {
-            pdf_add_int(pdf, (int) t3_char_widths[i]);
-        }
+    for (i = first_char; i <= last_char; i++) {
+        setpdffloat(pf, (int64_t) t3_char_widths[i], 2);
+        print_pdffloat(pdf, pf);
+        pdf_out(pdf, ' ');
     }
     pdf_end_array(pdf);
     pdf_end_obj(pdf);

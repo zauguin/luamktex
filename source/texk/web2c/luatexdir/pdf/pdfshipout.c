@@ -196,7 +196,7 @@ void ship_out(PDF pdf, halfword p, shipping_mode_e shipping_mode)
         cur.v = height(p);
         synch_pos_with_cur(pdf->posstruct, &refpoint, cur);
     } else {
-        /*tex We're shipping out a |/Form|. */
+        /*tex We're shipping out a |/Form| or a node font glyph. */
         pdf->posstruct->dir = box_dir(p);
         switch (pdf->posstruct->dir) {
             case dir_TLT:

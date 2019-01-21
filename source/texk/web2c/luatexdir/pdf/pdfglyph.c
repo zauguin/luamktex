@@ -287,3 +287,28 @@ void pdf_place_glyph(PDF pdf, internal_font_number f, int c, int ex)
     /*tex Also known as |adv_char_width()|: */
     p->cw.m += pdf_char_width(p, p->f_pdf, c);
 }
+
+void pdf_ship_node_char(PDF pdf, internal_font_number f, int c) {
+  int objnum;
+  if (pdf_font_num(f) < 0) {
+    f = -pdf_font_num(f);
+  }
+  if (!char_exists(f, c)) return;
+  if (!pdf_char_marked(f, c)) {
+    pdf->xform_count++;
+    objnum = pdf_create_obj(pdf, obj_type_glyph, pdf->xform_count);
+    set_obj_data_ptr(pdf, objnum, pdf_get_mem(pdf, pdfmem_xform_size));
+    set_obj_xform_type(pdf, objnum, pdf_font_num(f));
+    set_obj_xform_margin(pdf, objnum, pdf_xform_margin);
+    assert(char_index(f, c) >= 0);
+    if (char_index(f, c) == null)
+      normal_error("pdf backend", "a node glyph needs a node");
+    set_obj_xform_box(pdf, objnum, char_index(f, c));
+    set_charinfo_index(get_charinfo(f, c), objnum);
+    printf("DEBUG2!!!\n\n%i:%i\n\n", char_index(f, c), objnum);
+    if (global_shipping_mode == NOT_SHIPPING)
+      ship_out(pdf, char_index(f, c), SHIPPING_GLYPH);
+    else
+      addto_page_resources(pdf, obj_type_glyph, objnum);
+  }
+}
