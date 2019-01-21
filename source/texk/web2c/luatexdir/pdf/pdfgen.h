@@ -68,6 +68,7 @@ be the first written bytes.
 typedef enum {  /* needs pdf_prefix */
     NOT_SHIPPING,
     SHIPPING_PAGE,
+    SHIPPING_GLYPH,
     SHIPPING_FORM
 } shipping_mode_e;
 

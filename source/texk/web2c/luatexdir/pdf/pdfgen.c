@@ -811,6 +811,48 @@ void addto_page_resources(PDF pdf, pdf_obj_type t, int k)
     }
 }
 
+static void merge_page_resources(PDF pdf, pdf_obj_type t, struct avl_table **destination)
+{
+    pr_entry *pr, tmp, *src;
+    void **pp;
+    pdf_object_list *s, *p, *item = NULL, *tail = NULL;
+    tmp.obj_type = t;
+    if (!pdf->page_resources || !pdf->page_resources->resources_tree) return;
+    src = (pr_entry *) avl_find(pdf->page_resources->resources_tree, &tmp);
+    if (!src) return;
+    if (*destination == NULL) {
+        *destination = avl_create(comp_page_resources, NULL, &avl_xallocator);
+        if (*destination == NULL)
+            formatted_error("pdf backend","marge_page_resources(): avl_create() page_resource_tree failed");
+    }
+    pr = (pr_entry *) avl_find(*destination, &tmp);
+    if (pr == NULL) {
+        pr = xtalloc(1, pr_entry);
+        pr->obj_type = t;
+        pr->list = NULL;
+        pp = avl_probe(*destination, pr);
+        if (pp == NULL)
+            formatted_error("pdf backend","addto_page_resources(): avl_probe() out of memory in insertion");
+    }
+    if (pr->list == NULL) {
+        pr->list = src->list;
+        src->list = NULL;
+    } else {
+        while (src->list) {
+            for (p = pr->list; p->info != src->list->info && p->link != tail; p = p->link);
+            item = src->list;
+            src->list = item->link;
+            if (p->info == src->list->info) {
+                free(item);
+            } else {
+                if (tail == NULL) tail = p;
+                item->link = NULL;
+                p->link = item;
+            }
+        }
+    }
+}
+
 pdf_object_list *get_page_resources_list(PDF pdf, pdf_obj_type t)
 {
     pdf_resource_struct *re = pdf->page_resources;
@@ -1640,7 +1682,8 @@ void pdf_begin_page(PDF pdf)
         pdf->page_resources = xtalloc(1, pdf_resource_struct);
         pdf->page_resources->resources_tree = NULL;
     }
-    pdf->page_resources->last_resources = pdf_create_obj(pdf, obj_type_others, 0);
+    if (global_shipping_mode != SHIPPING_GLYPH)
+        pdf->page_resources->last_resources = pdf_create_obj(pdf, obj_type_others, 0);
     reset_page_resources(pdf);
 
     if (global_shipping_mode == SHIPPING_PAGE) {
@@ -1652,52 +1695,54 @@ void pdf_begin_page(PDF pdf)
         pdf->last_thread = null;
         pdf_begin_dict(pdf);
     } else {
-        xform_type = obj_xform_type(pdf, pdf_cur_form) ;
         pdf_begin_obj(pdf, pdf_cur_form, OBJSTM_NEVER);
         pdf->last_stream = pdf_cur_form;
         /*tex Write out the |Form| stream header */
         pdf_begin_dict(pdf);
-        if (xform_type == 0) {
-            pdf_dict_add_name(pdf, "Type", "XObject");
-            pdf_dict_add_name(pdf, "Subtype", "Form");
-            pdf_dict_add_int(pdf, "FormType", 1);
+        if(global_shipping_mode == SHIPPING_FORM) {
+            xform_type = obj_xform_type(pdf, pdf_cur_form) ;
+            if (xform_type == 0) {
+                pdf_dict_add_name(pdf, "Type", "XObject");
+                pdf_dict_add_name(pdf, "Subtype", "Form");
+                pdf_dict_add_int(pdf, "FormType", 1);
+            }
+            xform_attributes = pdf_xform_attr;
+            /*tex Now stored in the object: */
+            form_margin = obj_xform_margin(pdf, pdf_cur_form);
+            if (xform_attributes != null)
+                pdf_print_toks(pdf, xform_attributes);
+            if (obj_xform_attr(pdf, pdf_cur_form) != null) {
+                pdf_print_toks(pdf, obj_xform_attr(pdf, pdf_cur_form));
+                delete_token_ref(obj_xform_attr(pdf, pdf_cur_form));
+                set_obj_xform_attr(pdf, pdf_cur_form, null);
+            }
+            if (obj_xform_attr_str(pdf, pdf_cur_form) != null) {
+                lua_pdf_literal(pdf, obj_xform_attr_str(pdf, pdf_cur_form),1);
+                luaL_unref(Luas, LUA_REGISTRYINDEX, obj_xform_attr_str(pdf, pdf_cur_form));
+                set_obj_xform_attr_str(pdf, pdf_cur_form, null);
+            }
+            if (xform_type == 0 || xform_type == 1 || xform_type == 3) {
+                pdf_add_name(pdf, "BBox");
+                pdf_begin_array(pdf);
+                pdf_add_bp(pdf, -form_margin);
+                pdf_add_bp(pdf, -form_margin);
+                pdf_add_bp(pdf, pdf->page_size.h + form_margin);
+                pdf_add_bp(pdf, pdf->page_size.v + form_margin);
+                pdf_end_array(pdf);
+            }
+            if (xform_type == 0 || xform_type == 2 || xform_type == 3) {
+                pdf_add_name(pdf, "Matrix");
+                pdf_begin_array(pdf);
+                pdf_add_int(pdf, 1);
+                pdf_add_int(pdf, 0);
+                pdf_add_int(pdf, 0);
+                pdf_add_int(pdf, 1);
+                pdf_add_int(pdf, 0);
+                pdf_add_int(pdf, 0);
+                pdf_end_array(pdf);
+            }
+            pdf_dict_add_ref(pdf, "Resources", pdf->page_resources->last_resources);
         }
-        xform_attributes = pdf_xform_attr;
-        /*tex Now stored in the object: */
-        form_margin = obj_xform_margin(pdf, pdf_cur_form);
-        if (xform_attributes != null)
-            pdf_print_toks(pdf, xform_attributes);
-        if (obj_xform_attr(pdf, pdf_cur_form) != null) {
-            pdf_print_toks(pdf, obj_xform_attr(pdf, pdf_cur_form));
-            delete_token_ref(obj_xform_attr(pdf, pdf_cur_form));
-            set_obj_xform_attr(pdf, pdf_cur_form, null);
-        }
-        if (obj_xform_attr_str(pdf, pdf_cur_form) != null) {
-            lua_pdf_literal(pdf, obj_xform_attr_str(pdf, pdf_cur_form),1);
-            luaL_unref(Luas, LUA_REGISTRYINDEX, obj_xform_attr_str(pdf, pdf_cur_form));
-            set_obj_xform_attr_str(pdf, pdf_cur_form, null);
-        }
-        if (xform_type == 0 || xform_type == 1 || xform_type == 3) {
-            pdf_add_name(pdf, "BBox");
-            pdf_begin_array(pdf);
-            pdf_add_bp(pdf, -form_margin);
-            pdf_add_bp(pdf, -form_margin);
-            pdf_add_bp(pdf, pdf->page_size.h + form_margin);
-            pdf_add_bp(pdf, pdf->page_size.v + form_margin);
-            pdf_end_array(pdf);
-        }
-        if (xform_type == 0 || xform_type == 2 || xform_type == 3) {
-            pdf_add_name(pdf, "Matrix");
-            pdf_begin_array(pdf);
-            pdf_add_int(pdf, 1);
-            pdf_add_int(pdf, 0);
-            pdf_add_int(pdf, 0);
-            pdf_add_int(pdf, 1);
-            pdf_add_int(pdf, 0);
-            pdf_add_int(pdf, 0);
-            pdf_end_array(pdf);
-        }
-        pdf_dict_add_ref(pdf, "Resources", pdf->page_resources->last_resources);
     }
     /*tex Start a stream of page or form contents: */
     pdf_dict_add_streaminfo(pdf);
@@ -1870,6 +1915,25 @@ void pdf_end_page(PDF pdf)
         }
         ol = ol->link;
     }
+    ol = get_page_resources_list(pdf, obj_type_glyph);
+    while (ol != NULL) {
+        if (!is_obj_written(pdf, ol->info)) {
+            save_pdf_cur_form = pdf_cur_form;
+            pdf_cur_form = ol->info;
+            save_cur_page_size = pdf->page_size;
+            save_shipping_mode = global_shipping_mode;
+            pdf->page_resources = &local_page_resources;
+            local_page_resources.resources_tree = NULL;
+            ship_out(pdf, obj_xform_box(pdf, pdf_cur_form), SHIPPING_GLYPH);
+            /*tex Restore the page size and page resources. */
+            pdf->page_size = save_cur_page_size;
+            global_shipping_mode = save_shipping_mode;
+            destroy_page_resources_tree(pdf);
+            pdf->page_resources = res_p;
+            pdf_cur_form = save_pdf_cur_form;
+        }
+        ol = ol->link;
+    }
     /*tex Write out pending images. */
     ol = get_page_resources_list(pdf, obj_type_ximage);
     while (ol != NULL) {
@@ -1931,6 +1995,13 @@ void pdf_end_page(PDF pdf)
         write_out_pdf_mark_destinations(pdf);
         /*tex Write out \PDF\ bead rectangle specifications. */
         print_bead_rectangles(pdf);
+    }
+    if (global_shipping_mode == SHIPPING_GLYPH) {
+        /*tex Merge resources into font resources. */
+        merge_page_resources(pdf, obj_type_font, &pdf_font_resources(obj_xform_type(pdf, pdf_cur_form)));
+        merge_page_resources(pdf, obj_type_xform, &pdf_font_resources(obj_xform_type(pdf, pdf_cur_form)));
+        merge_page_resources(pdf, obj_type_ximage, &pdf_font_resources(obj_xform_type(pdf, pdf_cur_form)));
+        return;
     }
     /*tex Write out resources dictionary. */
     pdf_begin_obj(pdf, res_p->last_resources, OBJSTM_ALWAYS);

@@ -313,7 +313,12 @@ extern boolean get_callback(lua_State * L, int i);
 /* Additions to texmfmp.h for pdfTeX */
 
 /* mark a char in font */
-#  define pdf_mark_char(f,c) set_char_used(f,c,true)
+#  define pdf_mark_char(f,c) do {           \
+    if(font_format(f) == node_format) {     \
+      pdf_ship_node_char(static_pdf, f, c); \
+    }                                       \
+    set_char_used(f,c,true);                \
+} while (0)
 
 /* test whether a char in font is marked */
 #  define pdf_char_marked char_used

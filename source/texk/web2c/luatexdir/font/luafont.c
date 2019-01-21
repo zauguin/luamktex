@@ -43,7 +43,7 @@ const char *font_identity_strings[] = {
 };
 
 const char *font_format_strings[] = {
-    "unknown", "type1", "type3", "truetype", "opentype", NULL
+    "unknown", "type1", "type3", "truetype", "opentype", "node", NULL
 };
 
 const char *font_embedding_strings[] = {
@@ -198,7 +198,7 @@ static void font_char_to_lua(lua_State * L, internal_font_number f, charinfo * c
     if (get_charinfo_rp(co) != 0) {
         dump_intfield(L,right_protruding,get_charinfo_rp(co));
     }
-    if (font_encodingbytes(f) == 2) {
+    if (font_format(f) == node_format || font_encodingbytes(f) == 2) {
         dump_intfield(L,index,get_charinfo_index(co));
     }
     if (get_charinfo_name(co) != NULL) {
