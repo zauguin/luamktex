@@ -815,7 +815,7 @@ static void merge_page_resources(PDF pdf, pdf_obj_type t, struct avl_table **des
 {
     pr_entry *pr, tmp, *src;
     void **pp;
-    pdf_object_list *s, *p, *item = NULL, *tail = NULL;
+    pdf_object_list *p, *item = NULL, *tail = NULL;
     tmp.obj_type = t;
     if (!pdf->page_resources || !pdf->page_resources->resources_tree) return;
     src = (pr_entry *) avl_find(pdf->page_resources->resources_tree, &tmp);
@@ -853,17 +853,22 @@ static void merge_page_resources(PDF pdf, pdf_obj_type t, struct avl_table **des
     }
 }
 
-pdf_object_list *get_page_resources_list(PDF pdf, pdf_obj_type t)
+pdf_object_list *get_resources_list(struct avl_table *rt, pdf_obj_type t)
 {
-    pdf_resource_struct *re = pdf->page_resources;
     pr_entry *pr, tmp;
-    if (re == NULL || re->resources_tree == NULL)
-        return NULL;
     tmp.obj_type = t;
-    pr = (pr_entry *) avl_find(re->resources_tree, &tmp);
+    pr = (pr_entry *) avl_find(rt, &tmp);
     if (pr == NULL)
         return NULL;
     return pr->list;
+}
+
+pdf_object_list *get_page_resources_list(PDF pdf, pdf_obj_type t)
+{
+    pdf_resource_struct *re = pdf->page_resources;
+    if (re == NULL || re->resources_tree == NULL)
+        return NULL;
+    return get_resources_list(re->resources_tree, t);
 }
 
 static void reset_page_resources(PDF pdf)

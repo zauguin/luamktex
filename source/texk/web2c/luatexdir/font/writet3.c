@@ -213,7 +213,7 @@ static boolean writet3nodes(PDF pdf, internal_font_number f)
     scaledpos save_cur_page_size = pdf->page_size;
     global_shipping_mode = SHIPPING_FORM;
     /* int llx, lly, urx, ury; */
-    pdffloat pf;
+    /* pdffloat pf; */
     // How to identify null glyphs?
     /* boolean is_null_glyph; */
     t3_image_used = false;
@@ -230,7 +230,6 @@ static boolean writet3nodes(PDF pdf, internal_font_number f)
         /* ury = cd.cheight + lly; */
         /* update_bbox(llx, lly, urx, ury, t3_glyph_num == 0); */
         t3_glyph_num++;
-        printf("DEBUG!!!\n\n%i\n\n", char_index(f, i));
         t3_char_procs[i] = char_index(f, i);
         /* setpdffloat(pf, (int64_t) t3_char_widths[i], 2); */
         /* print_pdffloat(pdf, pf); */
@@ -253,6 +252,7 @@ void writet3(PDF pdf, internal_font_number f)
     int wptr, eptr, cptr;
     int first_char, last_char;
     int pk_font_scale;
+    int procset = PROCSET_PDF;
     pdffloat pf;
     boolean is_notdef;
     t3_glyph_num = 0;
@@ -316,11 +316,72 @@ void writet3(PDF pdf, internal_font_number f)
     }
     pdf_add_name(pdf, "Resources");
     pdf_begin_dict(pdf);
-    pdf_add_name(pdf, "ProcSet");
-    pdf_begin_array(pdf);
-    pdf_add_name(pdf, "PDF");
-    if (t3_image_used) {
-        pdf_add_name(pdf, "ImageB");
+    /*tex Generate font resources. */
+    if (!is_pk_font && pdf_font_resources(f)) {
+        char s[64], *p;
+        pdf_object_list *ol, *ol1;
+        if (ol = get_resources_list(pdf_font_resources(f), obj_type_font)) {
+            pdf_add_name(pdf, "Font");
+            pdf_begin_dict(pdf);
+            while (ol != NULL) {
+                p = s;
+                p += snprintf(p, 20, "F%i", obj_info(pdf, ol->info));
+                if (pdf->resname_prefix != NULL)
+                    p += snprintf(p, 20, "%s", pdf->resname_prefix);
+                pdf_dict_add_ref(pdf, s, ol->info);
+                ol = ol->link;
+            }
+            pdf_end_dict(pdf);
+            procset |= PROCSET_TEXT;
+        }
+        /*tex Generate |XObject| resources. */
+        ol = get_resources_list(pdf_font_resources(f), obj_type_xform);
+        ol1 = get_resources_list(pdf_font_resources(f), obj_type_ximage);
+        if (ol != NULL || ol1 != NULL) {
+            pdf_add_name(pdf, "XObject");
+            pdf_begin_dict(pdf);
+            while (ol != NULL) {
+                p = s;
+                p += snprintf(p, 20, "Fm%i", obj_info(pdf, ol->info));
+                if (pdf->resname_prefix != NULL)
+                    p += snprintf(p, 20, "%s", pdf->resname_prefix);
+                pdf_dict_add_ref(pdf, s, ol->info);
+                ol = ol->link;
+            }
+            while (ol1 != null) {
+                p = s;
+                p += snprintf(p, 20, "Im%i", obj_info(pdf, ol1->info));
+                if (pdf->resname_prefix != NULL)
+                    p += snprintf(p, 20, "%s", pdf->resname_prefix);
+                pdf_dict_add_ref(pdf, s, ol1->info);
+                procset |= img_procset(idict_array[obj_data_ptr(pdf, ol1->info)]);
+                ol1 = ol1->link;
+            }
+            pdf_end_dict(pdf);
+        }
+        /*tex Generate |ProcSet| in version 1.*/
+        if (pdf->major_version == 1) {
+            pdf_add_name(pdf, "ProcSet");
+            pdf_begin_array(pdf);
+            if ((procset & PROCSET_PDF) != 0)
+                pdf_add_name(pdf, "PDF");
+            if ((procset & PROCSET_TEXT) != 0)
+                pdf_add_name(pdf, "Text");
+            if ((procset & PROCSET_IMAGE_B) != 0)
+                pdf_add_name(pdf, "ImageB");
+            if ((procset & PROCSET_IMAGE_C) != 0)
+                pdf_add_name(pdf, "ImageC");
+            if ((procset & PROCSET_IMAGE_I) != 0)
+                pdf_add_name(pdf, "ImageI");
+            pdf_end_array(pdf);
+        }
+    } else {
+        pdf_add_name(pdf, "ProcSet");
+        pdf_begin_array(pdf);
+        pdf_add_name(pdf, "PDF");
+        if (t3_image_used) {
+            pdf_add_name(pdf, "ImageB");
+        }
     }
     pdf_end_array(pdf);
     pdf_end_dict(pdf);

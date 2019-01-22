@@ -180,6 +180,7 @@ extern void strbuf_free(strbuf_s * b);
 
 extern void addto_page_resources(PDF pdf, pdf_obj_type t, int k);
 extern pdf_object_list *get_page_resources_list(PDF pdf, pdf_obj_type t);
+extern pdf_object_list *get_resources_list(struct avl_table *rt, pdf_obj_type t);
 
 extern void pdf_out_block(PDF pdf, const char *s, size_t n);
 
