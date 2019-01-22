@@ -190,7 +190,7 @@ typedef struct texfont {
 
     int _pdf_font_num;          /* maps to a PDF resource ID */
     str_number _pdf_font_attr;  /* pointer to additional attributes */
-    void *_pdf_resources;
+    struct avl_table *_pdf_resources;
 } texfont;
 
 typedef enum {
