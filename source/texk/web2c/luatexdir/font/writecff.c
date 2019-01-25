@@ -1171,6 +1171,7 @@ static long pack_integer(card8 * dest, long destlen, long value)
 
 static long pack_real(card8 * dest, long destlen, double value)
 {
+    static char temp_buffer[22];
     long e;
     int i = 0, pos = 2;
     int res;
@@ -1199,20 +1200,18 @@ static long pack_real(card8 * dest, long destlen, double value)
             e--;
         }
     }
-    res = sprintf(work_buffer, "%1.14g", value);
+    res = sprintf(temp_buffer, "%1.14g", value);
     if (res<0)
         normal_error("cff","invalid conversion");
-    if (res>CFF_REAL_MAX_LEN)
-        res=CFF_REAL_MAX_LEN;
     for (i = 0; i < res; i++) {
         unsigned char ch = 0;
-        if (work_buffer[i] == '\0') {
+        if (temp_buffer[i] == '\0') {
             /*tex In fact |res| should prevent this. */
             break;
-        } else if (work_buffer[i] == '.') {
+        } else if (temp_buffer[i] == '.') {
             ch = 0x0a;
-        } else if (work_buffer[i] >= '0' && work_buffer[i] <= '9') {
-            ch = (unsigned char) (work_buffer[i] - '0');
+        } else if (temp_buffer[i] >= '0' && temp_buffer[i] <= '9') {
+            ch = (unsigned char) (temp_buffer[i] - '0');
         } else {
             normal_error("cff","invalid character");
         }
@@ -1247,15 +1246,15 @@ static long pack_real(card8 * dest, long destlen, double value)
         pos++;
     }
     if (e != 0) {
-        sprintf(work_buffer, "%ld", e);
+        sprintf(temp_buffer, "%ld", e);
         for (i = 0; i < CFF_REAL_MAX_LEN; i++) {
             unsigned char ch = 0;
-            if (work_buffer[i] == '\0') {
+            if (temp_buffer[i] == '\0') {
                 break;
-            } else if (work_buffer[i] == '.') {
+            } else if (temp_buffer[i] == '.') {
                 ch = 0x0a;
-            } else if (work_buffer[i] >= '0' && work_buffer[i] <= '9') {
-                ch = (unsigned char) (work_buffer[i] - '0');
+            } else if (temp_buffer[i] >= '0' && temp_buffer[i] <= '9') {
+                ch = (unsigned char) (temp_buffer[i] - '0');
             } else {
                 normal_error("cff","invalid character");
             }
