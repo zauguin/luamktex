@@ -915,6 +915,22 @@ static int getpdffontname(lua_State * L)
     return 1 ;
 }
 
+static int getpdfprimaryfontid(lua_State * L)
+{
+    if (lua_type(L, 1) == LUA_TNUMBER) {
+        int ff;
+        int c = (int) lua_tointeger(L, 1);
+        if (!font_used(c)) {
+            pdf_init_font(static_pdf,c);
+        }
+        set_ff(c);
+        lua_pushinteger(L, ff);
+    } else {
+        lua_pushnil(L);
+    }
+    return 1 ;
+}
+
 static int getpdffontobjnum(lua_State * L)
 {
     if (lua_type(L, 1) == LUA_TNUMBER) {
@@ -1324,6 +1340,7 @@ static const struct luaL_Reg pdflib[] = {
     { "getsuppressoptionalinfo", l_get_suppress_optional_info },
     { "setsuppressoptionalinfo", l_set_suppress_optional_info },
     { "getfontname", getpdffontname },
+    { "getprimaryfontid", getpdfprimaryfontid },
     { "getfontobjnum", getpdffontobjnum },
     { "getfontsize", getpdffontsize },
     { "getxformname", getpdfxformname },

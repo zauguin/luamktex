@@ -222,6 +222,20 @@ yourself and need for instance information about a (to be) embedded font.
 
 \stopsubsection
 
+\startsubsection[title={\type {getprimaryfontid}}]
+
+\libindex{getprimaryfontid}
+
+Sometimes \TEX\ will use the same \PDF\ font object for multiple \TEX\ fonts,
+especially for multiple sizes of the same (vector) font.
+In this case, this returns the font id of the \TEX\ font which is used to generate
+the \PDF\ font.
+It is mostly used with \type{font.addcharacters} to make sure that all added characters also exists
+in the primary font.
+Otherwise the characters would be missing in the generated PDF file.
+
+\stopsubsection
+
 \startsubsection[title={\type {[set|get]origin}}]
 
 \topicindex{\PDF+positioning}
