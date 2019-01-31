@@ -329,7 +329,9 @@ static char *mplib_find_file(MP mp, const char *fname, const char *fmode, int ft
 {
     lua_State *L = (lua_State *)mp_userdata(mp);
     lua_checkstack(L, 4);
-    lua_getfield(L, LUA_REGISTRYINDEX, "mplib.file_finder");
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "file_finder");
+    lua_replace(L, -2);
     if (lua_isfunction(L, -1)) {
         char *s = NULL;
         const char *x = NULL;
@@ -365,9 +367,9 @@ static int mplib_find_file_function(lua_State * L)
         /*tex An error. */
         return 1;
     }
-    lua_pushstring(L, "mplib.file_finder");
+    lua_pushstring(L, "file_finder");
     lua_pushvalue(L, -2);
-    lua_rawset(L, LUA_REGISTRYINDEX);
+    lua_rawset(L, -4);
     return 0;
 }
 
@@ -379,8 +381,10 @@ static void mplib_warning(const char *str)
 static void mplib_script_error(MP mp, const char *str)
 {
     lua_State *L = (lua_State *)mp_userdata(mp);
-    lua_checkstack(L, 1);
-    lua_getfield(L, LUA_REGISTRYINDEX, "mplib.script_error");
+    lua_checkstack(L, 2);
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "script_error");
+    lua_replace(L, -2);
     if (lua_isfunction(L, -1)) {
         lua_pushstring(L, str);
         /*tex We assume that the function is okay. */
@@ -397,17 +401,19 @@ static int mplib_script_error_function(lua_State * L)
         /*tex An error. */
         return 1;
     }
-    lua_pushstring(L, "mplib.script_error");
+    lua_pushstring(L, "script_error");
     lua_pushvalue(L, -2);
-    lua_rawset(L, LUA_REGISTRYINDEX);
+    lua_rawset(L, -4);
     return 0;
 }
 
 static char *mplib_run_script(MP mp, const char *str)
 {
     lua_State *L = (lua_State *)mp_userdata(mp);
-    lua_checkstack(L, 1);
-    lua_getfield(L, LUA_REGISTRYINDEX, "mplib.run_script");
+    lua_checkstack(L, 2);
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "run_script");
+    lua_replace(L, -2);
     if (lua_isfunction(L, -1)) {
         char *s = NULL;
         const char *x = NULL;
@@ -433,17 +439,19 @@ static int mplib_run_script_function(lua_State * L)
     if (!(lua_isfunction(L, -1) || lua_isnil(L, -1))) {
         return 1; /* error */
     }
-    lua_pushstring(L, "mplib.run_script");
+    lua_pushstring(L, "run_script");
     lua_pushvalue(L, -2);
-    lua_rawset(L, LUA_REGISTRYINDEX);
+    lua_rawset(L, -4);
     return 0;
 }
 
 static char *mplib_make_text(MP mp, const char *str, int mode)
 {
     lua_State *L = (lua_State *)mp_userdata(mp);
-    lua_checkstack(L, 1);
-    lua_getfield(L, LUA_REGISTRYINDEX, "mplib.make_text");
+    lua_checkstack(L, 2);
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "make_text");
+    lua_replace(L, -2);
     if (lua_isfunction(L, -1)) {
         char *s = NULL;
         const char *x = NULL;
@@ -471,9 +479,9 @@ static int mplib_make_text_function(lua_State * L)
         /*tex An error. */
         return 1;
     }
-    lua_pushstring(L, "mplib.make_text");
+    lua_pushstring(L, "make_text");
     lua_pushvalue(L, -2);
-    lua_rawset(L, LUA_REGISTRYINDEX);
+    lua_rawset(L, -4);
     return 0;
 }
 
@@ -544,6 +552,8 @@ static int mplib_new(lua_State * L)
     /*  options->script_error = mplib_script_error; */
         options->print_found_names = 1;
         options->ini_version = 1;
+        /*tex Here we create the uservalue table for the callbacks: */
+        lua_newtable(L);
         if (lua_type(L, 1) == LUA_TTABLE) {
             for (i = 0; mplib_parms[i].name != NULL; i++) {
                 lua_getfield(L, 1, mplib_parms[i].name);
@@ -606,6 +616,7 @@ static int mplib_new(lua_State * L)
                 lua_pop(L, 1);
             }
         }
+        lua_setuservalue(L, -2);
         *mp_ptr = mp_initialize(options);
         xfree(options->command_line);
         xfree(options->mem_name);
