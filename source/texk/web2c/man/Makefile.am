@@ -60,10 +60,10 @@ man1_links += ppltotf:uppltotf ptftopl:uptftopl
 endif PTEX
 EXTRA_DIST += ptex.man ppltotf.man ptftopl.man
 
-if LUATEX
+if LUAMKTEX
 man_sources += luatex.man
 man1_links += luatex:texlua luatex:texluac
-endif LUATEX
+endif LUAMKTEX
 EXTRA_DIST += luatex.man
 
 if XETEX

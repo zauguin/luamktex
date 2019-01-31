@@ -100,8 +100,8 @@ host_triplet = @host@
 @PTEX_TRUE@am__append_11 = ptex.man ppltotf.man ptftopl.man
 @PTEX_TRUE@am__append_12 = ptex:eptex ptex:euptex ptex:uptex \
 @PTEX_TRUE@	ppltotf:uppltotf ptftopl:uptftopl
-@LUATEX_TRUE@am__append_13 = luatex.man
-@LUATEX_TRUE@am__append_14 = luatex:texlua luatex:texluac
+@LUAMKTEX_TRUE@am__append_13 = luatex.man
+@LUAMKTEX_TRUE@am__append_14 = luatex:texlua luatex:texluac
 @XETEX_TRUE@am__append_15 = xetex.man
 @OTANGLE_TRUE@am__append_16 = $(otangle_man_sources)
 @OTANGLE_TRUE@am__append_17 = dvicopy:odvicopy dvitype:odvitype tangle:otangle

@@ -1,4 +1,4 @@
-## texk/web2c/luatexdir/am/libluatex.am: Makefile fragment for libluatex.
+## texk/web2c/luatexdir/am/libluamktex.am: Makefile fragment for libluamktex.
 ##
 ## Copyright (C) 2009-2015 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
@@ -21,70 +21,70 @@ LUA_DEPEND = $(LUA53_DEPEND)
 
 
 
-## libluatex
+## libluamktex
 ##
-#EXTRA_LIBRARIES += libluatex.a liblua53tex.a libluajittex.a
-EXTRA_LIBRARIES += libluatex.a libluajittex.a
+#EXTRA_LIBRARIES += libluamktex.a liblua53mktex.a libluajitmktex.a
+EXTRA_LIBRARIES += libluamktex.a libluajitmktex.a
 
 
 
-libluatex_a_DEPENDENCIES = libff.a libluamisc.a libluaharfbuzz.a
-#liblua53tex_a_DEPENDENCIES = libff.a liblua53misc.a
-libluajittex_a_DEPENDENCIES = libff.a libluajitmisc.a libluajitharfbuzz.a
+libluamktex_a_DEPENDENCIES = libff.a libluamisc.a libluaharfbuzz.a
+#liblua53mktex_a_DEPENDENCIES = libff.a liblua53misc.a
+libluajitmktex_a_DEPENDENCIES = libff.a libluajitmisc.a libluajitharfbuzz.a
 
-libluatex_a_preflags = $(AM_CPPFLAGS) $(ZLIB_INCLUDES) $(LIBPNG_INCLUDES) $(HARFBUZZ_INCLUDES)
-libluatex_a_preflags += -I$(srcdir)/libmd5
-libluatex_a_preflags += -DpdfTeX -I$(srcdir)/luatexdir
-libluatex_a_preflags += -I$(srcdir)/luatexdir/unilib
-libluatex_a_preflags += -I$(srcdir)/luatexdir/luapplib/util
-libluatex_a_preflags += -I$(srcdir)/luatexdir/luafontloader/fontforge/inc
-libluatex_a_preflags += -DLUA_FF_LIB=1 -I$(srcdir)/luatexdir/luafontloader/fontforge/fontforge
-libluatex_a_preflags += -DSYNCTEX_ENGINE_H='<synctex-luatex.h>' -I$(srcdir)/synctexdir
+libluamktex_a_preflags = $(AM_CPPFLAGS) $(ZLIB_INCLUDES) $(LIBPNG_INCLUDES) $(HARFBUZZ_INCLUDES)
+libluamktex_a_preflags += -I$(srcdir)/libmd5
+libluamktex_a_preflags += -DpdfTeX -I$(srcdir)/luatexdir
+libluamktex_a_preflags += -I$(srcdir)/luatexdir/unilib
+libluamktex_a_preflags += -I$(srcdir)/luatexdir/luapplib/util
+libluamktex_a_preflags += -I$(srcdir)/luatexdir/luafontloader/fontforge/inc
+libluamktex_a_preflags += -DLUA_FF_LIB=1 -I$(srcdir)/luatexdir/luafontloader/fontforge/fontforge
+libluamktex_a_preflags += -DSYNCTEX_ENGINE_H='<synctex-luatex.h>' -I$(srcdir)/synctexdir
 
-libluatex_a_CPPFLAGS = $(libluatex_a_preflags) $(LUA_INCLUDES)
-#liblua53tex_a_CPPFLAGS = $(libluatex_a_preflags) $(LUA_LUA53_INCLUDES)
-libluajittex_a_CPPFLAGS = $(libluatex_a_preflags) $(LUAJIT_INCLUDES) $(LUAJIT_DEFINES)
-libluajittex_a_CPPFLAGS += -DLuajitTeX
+libluamktex_a_CPPFLAGS = $(libluamktex_a_preflags) $(LUA_INCLUDES)
+#liblua53mktex_a_CPPFLAGS = $(libluamktex_a_preflags) $(LUA_LUA53_INCLUDES)
+libluajitmktex_a_CPPFLAGS = $(libluamktex_a_preflags) $(LUAJIT_INCLUDES) $(LUAJIT_DEFINES)
+libluajitmktex_a_CPPFLAGS += -DLuajitTeX
 
-libluatex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
-#liblua53tex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
-libluajittex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
+libluamktex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
+#liblua53mktex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
+libluajitmktex_a_CXXFLAGS = $(WARNING_CXXFLAGS)
 
-dist_libluatex_a_SOURCES = \
+dist_libluamktex_a_SOURCES = \
 	luatexdir/lua/lstrlibext.c \
 	luatexdir/lua/helpers.c \
 	luatexdir/lua/texluac.c 
-nodist_libluatex_a_SOURCES = \
-	$(dist_libluatex_sources) \
-	$(nodist_libluatex_sources)
-# dist_liblua53tex_a_SOURCES = \
+nodist_libluamktex_a_SOURCES = \
+	$(dist_libluamktex_sources) \
+	$(nodist_libluamktex_sources)
+# dist_liblua53mktex_a_SOURCES = \
 # 	luatexdir/lua/lstrlibext.c \
 # 	luatexdir/lua/helpers.c \
 # 	luatexdir/lua/texluac.c 
-# nodist_liblua53tex_a_SOURCES = \
-# 	$(dist_libluatex_sources) \
-# 	$(nodist_libluatex_sources)
-dist_libluajittex_a_SOURCES = \
+# nodist_liblua53mktex_a_SOURCES = \
+# 	$(dist_libluamktex_sources) \
+# 	$(nodist_libluamktex_sources)
+dist_libluajitmktex_a_SOURCES = \
 	luatexdir/lua/lauxlib_bridge.h \
 	luatexdir/lua/lstrlibext.c \
 	luatexdir/lua/texluajitc.c
-nodist_libluajittex_a_SOURCES = \
-	$(dist_libluatex_sources) \
-	$(nodist_libluatex_sources)
+nodist_libluajitmktex_a_SOURCES = \
+	$(dist_libluamktex_sources) \
+	$(nodist_libluamktex_sources)
 
 ## mplib "stub" backends are in mplibstuff.c
-$(libluatex_a_OBJECTS): libff.a libmplibcore.a libluamisc.a 
-#$(liblua53tex_a_OBJECTS): libff.a libmplibcore.a liblua53misc.a 
-$(libluajittex_a_OBJECTS): libff.a libmplibcore.a libluajitmisc.a 
+$(libluamktex_a_OBJECTS): libff.a libmplibcore.a libluamisc.a 
+#$(liblua53mktex_a_OBJECTS): libff.a libmplibcore.a liblua53misc.a 
+$(libluajitmktex_a_OBJECTS): libff.a libmplibcore.a libluajitmisc.a 
 
 
 ## from luatexdir
 ##
-libluatex_web =
+libluamktex_web =
 
-nodist_libluatex_sources =
+nodist_libluamktex_sources =
 
-dist_libluatex_sources = \
+dist_libluamktex_sources = \
 	luatexdir/luatexcallbackids.h \
 	luatexdir/luatex.h \
 	luatexdir/luatex-common.h \
@@ -92,88 +92,88 @@ dist_libluatex_sources = \
 
 ## from luatexdir/luafontloader/src
 ##
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/luafontloader/src/ffdummies.c \
 	luatexdir/luafontloader/src/ffdummies.h \
 	luatexdir/luafontloader/src/luafflib.c
 
 ## from luatexdir/dvi
 ##
-luatex_dvi_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/dvi $(ctangle)
+luamktex_dvi_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/dvi $(ctangle)
 
 #dvigen.c: ctangle$(EXEEXT) luatexdir/dvi/dvigen.w
-#	$(luatex_dvi_ctangle) dvigen.w
+#	$(luamktex_dvi_ctangle) dvigen.w
 
-#libluatex_web += luatexdir/dvi/dvigen.w
+#libluamktex_web += luatexdir/dvi/dvigen.w
 
-#nodist_libluatex_sources += dvigen.c
+#nodist_libluamktex_sources += dvigen.c
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/dvi/dvigen.h \
 	luatexdir/dvi/dvigen.c
 
 ## from luatexdir/font
 ##
-luatex_font_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/font $(ctangle)
+luamktex_font_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/font $(ctangle)
 
 # dofont.c: ctangle$(EXEEXT) luatexdir/font/dofont.w
-# 	$(luatex_font_ctangle) dofont.w
+# 	$(luamktex_font_ctangle) dofont.w
 # luafont.c: ctangle$(EXEEXT) luatexdir/font/luafont.w
-# 	$(luatex_font_ctangle) luafont.w
+# 	$(luamktex_font_ctangle) luafont.w
 # mapfile.c: ctangle$(EXEEXT) luatexdir/font/mapfile.w
-# 	$(luatex_font_ctangle) mapfile.w
+# 	$(luamktex_font_ctangle) mapfile.w
 # pkin.c: ctangle$(EXEEXT) luatexdir/font/pkin.w
-# 	$(luatex_font_ctangle) pkin.w
+# 	$(luamktex_font_ctangle) pkin.w
 # sfnt.c: ctangle$(EXEEXT) luatexdir/font/sfnt.w
-# 	$(luatex_font_ctangle) sfnt.w
+# 	$(luamktex_font_ctangle) sfnt.w
 # texfont.c: ctangle$(EXEEXT) luatexdir/font/texfont.w
-# 	$(luatex_font_ctangle) texfont.w
+# 	$(luamktex_font_ctangle) texfont.w
 # tfmofm.c: ctangle$(EXEEXT) luatexdir/font/tfmofm.w
-# 	$(luatex_font_ctangle) tfmofm.w
+# 	$(luamktex_font_ctangle) tfmofm.w
 # tounicode.c: ctangle$(EXEEXT) luatexdir/font/tounicode.w
-# 	$(luatex_font_ctangle) tounicode.w
+# 	$(luamktex_font_ctangle) tounicode.w
 # tt_glyf.c: ctangle$(EXEEXT) luatexdir/font/tt_glyf.w
-# 	$(luatex_font_ctangle) tt_glyf.w
+# 	$(luamktex_font_ctangle) tt_glyf.w
 # tt_table.c: ctangle$(EXEEXT) luatexdir/font/tt_table.w
-# 	$(luatex_font_ctangle) tt_table.w
+# 	$(luamktex_font_ctangle) tt_table.w
 # vfovf.c: ctangle$(EXEEXT) luatexdir/font/vfovf.w
-# 	$(luatex_font_ctangle) vfovf.w
+# 	$(luamktex_font_ctangle) vfovf.w
 # vfpacket.c: ctangle$(EXEEXT) luatexdir/font/vfpacket.w
-# 	$(luatex_font_ctangle) vfpacket.w
+# 	$(luamktex_font_ctangle) vfpacket.w
 # writecff.c: ctangle$(EXEEXT) luatexdir/font/writecff.w
-# 	$(luatex_font_ctangle) writecff.w
+# 	$(luamktex_font_ctangle) writecff.w
 # writeenc.c: ctangle$(EXEEXT) luatexdir/font/writeenc.w
-# 	$(luatex_font_ctangle) writeenc.w
+# 	$(luamktex_font_ctangle) writeenc.w
 # writefont.c: ctangle$(EXEEXT) luatexdir/font/writefont.w
-# 	$(luatex_font_ctangle) writefont.w
+# 	$(luamktex_font_ctangle) writefont.w
 # writet1.c: ctangle$(EXEEXT) luatexdir/font/writet1.w
-# 	$(luatex_font_ctangle) writet1.w
+# 	$(luamktex_font_ctangle) writet1.w
 # writet3.c: ctangle$(EXEEXT) luatexdir/font/writet3.w
-# 	$(luatex_font_ctangle) writet3.w
+# 	$(luamktex_font_ctangle) writet3.w
 # writettf.c: ctangle$(EXEEXT) luatexdir/font/writettf.w
-# 	$(luatex_font_ctangle) writettf.w
+# 	$(luamktex_font_ctangle) writettf.w
 # writetype0.c: ctangle$(EXEEXT) luatexdir/font/writetype0.w
-# 	$(luatex_font_ctangle) writetype0.w
+# 	$(luamktex_font_ctangle) writetype0.w
 # writetype2.c: ctangle$(EXEEXT) luatexdir/font/writetype2.w
-# 	$(luatex_font_ctangle) writetype2.w
+# 	$(luamktex_font_ctangle) writetype2.w
 
-# libluatex_web += luatexdir/font/dofont.w luatexdir/font/luafont.w luatexdir/font/mapfile.w
-# libluatex_web += luatexdir/font/pkin.w luatexdir/font/sfnt.w 
-# libluatex_web += luatexdir/font/texfont.w luatexdir/font/tfmofm.w
-# libluatex_web += luatexdir/font/tounicode.w luatexdir/font/tt_glyf.w
-# libluatex_web += luatexdir/font/tt_table.w luatexdir/font/vfovf.w
-# libluatex_web += luatexdir/font/vfpacket.w luatexdir/font/writecff.w
-# libluatex_web += luatexdir/font/writeenc.w luatexdir/font/writefont.w
-# libluatex_web += luatexdir/font/writet1.w luatexdir/font/writet3.w
-# libluatex_web += luatexdir/font/writettf.w luatexdir/font/writetype0.w
-# libluatex_web += luatexdir/font/writetype2.w
+# libluamktex_web += luatexdir/font/dofont.w luatexdir/font/luafont.w luatexdir/font/mapfile.w
+# libluamktex_web += luatexdir/font/pkin.w luatexdir/font/sfnt.w 
+# libluamktex_web += luatexdir/font/texfont.w luatexdir/font/tfmofm.w
+# libluamktex_web += luatexdir/font/tounicode.w luatexdir/font/tt_glyf.w
+# libluamktex_web += luatexdir/font/tt_table.w luatexdir/font/vfovf.w
+# libluamktex_web += luatexdir/font/vfpacket.w luatexdir/font/writecff.w
+# libluamktex_web += luatexdir/font/writeenc.w luatexdir/font/writefont.w
+# libluamktex_web += luatexdir/font/writet1.w luatexdir/font/writet3.w
+# libluamktex_web += luatexdir/font/writettf.w luatexdir/font/writetype0.w
+# libluamktex_web += luatexdir/font/writetype2.w
 
-# nodist_libluatex_sources += dofont.c luafont.c mapfile.c pkin.c sfnt.c 
-# nodist_libluatex_sources += texfont.c tfmofm.c tounicode.c tt_glyf.c tt_table.c vfovf.c vfpacket.c
-# nodist_libluatex_sources += writecff.c writeenc.c writefont.c writet1.c writet3.c writettf.c
-# nodist_libluatex_sources += writetype0.c writetype2.c
+# nodist_libluamktex_sources += dofont.c luafont.c mapfile.c pkin.c sfnt.c 
+# nodist_libluamktex_sources += texfont.c tfmofm.c tounicode.c tt_glyf.c tt_table.c vfovf.c vfpacket.c
+# nodist_libluamktex_sources += writecff.c writeenc.c writefont.c writet1.c writet3.c writettf.c
+# nodist_libluamktex_sources += writetype0.c writetype2.c
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/font/luatexfont.h \
 	luatexdir/font/mapfile.h \
 	luatexdir/font/sfnt.h \
@@ -206,31 +206,31 @@ dist_libluatex_sources += \
 
 ## from luatexdir/image
 ##
-luatex_image_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/image $(ctangle)
+luamktex_image_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/image $(ctangle)
 
 #writeimg.c: ctangle$(EXEEXT) luatexdir/image/writeimg.w
-#	$(luatex_image_ctangle) writeimg.w
+#	$(luamktex_image_ctangle) writeimg.w
 #writejbig2.c: ctangle$(EXEEXT) luatexdir/image/writejbig2.w
-#	$(luatex_image_ctangle) writejbig2.w
+#	$(luamktex_image_ctangle) writejbig2.w
 #writejpg.c: ctangle$(EXEEXT) luatexdir/image/writejpg.w
-#	$(luatex_image_ctangle) writejpg.w
+#	$(luamktex_image_ctangle) writejpg.w
 #writejp2.c: ctangle$(EXEEXT) luatexdir/image/writejp2.w
-#	$(luatex_image_ctangle) writejp2.w
+#	$(luamktex_image_ctangle) writejp2.w
 #writepng.c: ctangle$(EXEEXT) luatexdir/image/writepng.w
-#	$(luatex_image_ctangle) writepng.w
+#	$(luamktex_image_ctangle) writepng.w
 #pdftoepdf.cc: ctangle$(EXEEXT) luatexdir/image/pdftoepdf.w
-#	$(luatex_image_ctangle) pdftoepdf.w - $@
+#	$(luamktex_image_ctangle) pdftoepdf.w - $@
 
-#libluatex_web += luatexdir/image/writeimg.w
-#libluatex_web += luatexdir/image/writejbig2.w
-#libluatex_web += luatexdir/image/writejpg.w
-#libluatex_web += luatexdir/image/writejp2.w
-#libluatex_web += luatexdir/image/writepng.w
-#libluatex_web += luatexdir/image/pdftoepdf.w
+#libluamktex_web += luatexdir/image/writeimg.w
+#libluamktex_web += luatexdir/image/writejbig2.w
+#libluamktex_web += luatexdir/image/writejpg.w
+#libluamktex_web += luatexdir/image/writejp2.w
+#libluamktex_web += luatexdir/image/writepng.w
+#libluamktex_web += luatexdir/image/pdftoepdf.w
 
-#nodist_libluatex_sources += writeimg.c writejbig2.c writejpg.c writejp2.c writepng.c 
+#nodist_libluamktex_sources += writeimg.c writejbig2.c writejpg.c writejp2.c writepng.c 
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/image/epdf.h \
 	luatexdir/image/image.h \
 	luatexdir/image/pdftoepdf.h \
@@ -248,9 +248,9 @@ dist_libluatex_sources += \
 
 ## from luatexdir/lang
 ##
-luatex_lang_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/lang $(ctangle)
+luamktex_lang_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/lang $(ctangle)
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/lang/hnjalloc.h \
 	luatexdir/lang/hyphen.h \
 	luatexdir/lang/texlang.h \
@@ -260,31 +260,31 @@ dist_libluatex_sources += \
 
 ## from luatexdir/lua
 ##
-luatex_lua_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/lua $(ctangle)
+luamktex_lua_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/lua $(ctangle)
 
 #helpers.c: ctangle$(EXEEXT) luatexdir/lua/helpers.w
-#	$(luatex_lua_ctangle) helpers.w
+#	$(luamktex_lua_ctangle) helpers.w
 #luainit.c: ctangle$(EXEEXT) luatexdir/lua/luainit.w
-#	$(luatex_lua_ctangle) luainit.w
+#	$(luamktex_lua_ctangle) luainit.w
 #luajitstuff.c: ctangle$(EXEEXT) luatexdir/lua/luajitstuff.w
-#	$(luatex_lua_ctangle) luajitstuff.w
+#	$(luamktex_lua_ctangle) luajitstuff.w
 #luanode.c: ctangle$(EXEEXT) luatexdir/lua/luanode.w
-#	$(luatex_lua_ctangle) luanode.w
+#	$(luamktex_lua_ctangle) luanode.w
 #luastuff.c: ctangle$(EXEEXT) luatexdir/lua/luastuff.w
-#	$(luatex_lua_ctangle) luastuff.w
+#	$(luamktex_lua_ctangle) luastuff.w
 #luatoken.c: ctangle$(EXEEXT) luatexdir/lua/luatoken.w
-#	$(luatex_lua_ctangle) luatoken.w
+#	$(luamktex_lua_ctangle) luatoken.w
 #mplibstuff.c: ctangle$(EXEEXT) luatexdir/lua/mplibstuff.w
-#	$(luatex_lua_ctangle) mplibstuff.w
+#	$(luamktex_lua_ctangle) mplibstuff.w
 #texluac.c: ctangle$(EXEEXT) luatexdir/lua/texluac.w
-#	$(luatex_lua_ctangle) texluac.w
+#	$(luamktex_lua_ctangle) texluac.w
 #texluajitc.c: ctangle$(EXEEXT) luatexdir/lua/texluajitc.w
-#	$(luatex_lua_ctangle) texluajitc.w
+#	$(luamktex_lua_ctangle) texluajitc.w
 
-#libluatex_web += luatexdir/lua/luainit.w luatexdir/lua/luajitstuff.w
+#libluamktex_web += luatexdir/lua/luainit.w luatexdir/lua/luajitstuff.w
 
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/lua/lcallbacklib.c \
 	luatexdir/lua/lfontlib.c \
 	luatexdir/lua/limglib.c \
@@ -314,69 +314,69 @@ dist_libluatex_sources += \
 
 ## from luatexdir/pdf
 ##
-luatex_pdf_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/pdf $(ctangle)
+luamktex_pdf_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/pdf $(ctangle)
 
 # pdfpagetree.c: ctangle$(EXEEXT) luatexdir/pdf/pdfpagetree.w
-# 	$(luatex_pdf_ctangle) pdfpagetree.w
+# 	$(luamktex_pdf_ctangle) pdfpagetree.w
 # pdfaction.c: ctangle$(EXEEXT) luatexdir/pdf/pdfaction.w
-# 	$(luatex_pdf_ctangle) pdfaction.w
+# 	$(luamktex_pdf_ctangle) pdfaction.w
 # pdfannot.c: ctangle$(EXEEXT) luatexdir/pdf/pdfannot.w
-# 	$(luatex_pdf_ctangle) pdfannot.w
+# 	$(luamktex_pdf_ctangle) pdfannot.w
 # pdfcolorstack.c: ctangle$(EXEEXT) luatexdir/pdf/pdfcolorstack.w
-# 	$(luatex_pdf_ctangle) pdfcolorstack.w
+# 	$(luamktex_pdf_ctangle) pdfcolorstack.w
 # pdfdest.c: ctangle$(EXEEXT) luatexdir/pdf/pdfdest.w
-# 	$(luatex_pdf_ctangle) pdfdest.w
+# 	$(luamktex_pdf_ctangle) pdfdest.w
 # pdffont.c: ctangle$(EXEEXT) luatexdir/pdf/pdffont.w
-# 	$(luatex_pdf_ctangle) pdffont.w
+# 	$(luamktex_pdf_ctangle) pdffont.w
 # pdfgen.c: ctangle$(EXEEXT) luatexdir/pdf/pdfgen.w
-# 	$(luatex_pdf_ctangle) pdfgen.w
+# 	$(luamktex_pdf_ctangle) pdfgen.w
 # pdfglyph.c: ctangle$(EXEEXT) luatexdir/pdf/pdfglyph.w
-# 	$(luatex_pdf_ctangle) pdfglyph.w
+# 	$(luamktex_pdf_ctangle) pdfglyph.w
 # pdfimage.c: ctangle$(EXEEXT) luatexdir/pdf/pdfimage.w
-# 	$(luatex_pdf_ctangle) pdfimage.w
+# 	$(luamktex_pdf_ctangle) pdfimage.w
 # pdflink.c: ctangle$(EXEEXT) luatexdir/pdf/pdflink.w
-# 	$(luatex_pdf_ctangle) pdflink.w
+# 	$(luamktex_pdf_ctangle) pdflink.w
 # pdflistout.c: ctangle$(EXEEXT) luatexdir/pdf/pdflistout.w
-# 	$(luatex_pdf_ctangle) pdflistout.w
+# 	$(luamktex_pdf_ctangle) pdflistout.w
 # pdfliteral.c: ctangle$(EXEEXT) luatexdir/pdf/pdfliteral.w
-# 	$(luatex_pdf_ctangle) pdfliteral.w
+# 	$(luamktex_pdf_ctangle) pdfliteral.w
 # pdfobj.c: ctangle$(EXEEXT) luatexdir/pdf/pdfobj.w
-# 	$(luatex_pdf_ctangle) pdfobj.w
+# 	$(luamktex_pdf_ctangle) pdfobj.w
 # pdfoutline.c: ctangle$(EXEEXT) luatexdir/pdf/pdfoutline.w
-# 	$(luatex_pdf_ctangle) pdfoutline.w
+# 	$(luamktex_pdf_ctangle) pdfoutline.w
 # pdfpage.c: ctangle$(EXEEXT) luatexdir/pdf/pdfpage.w
-# 	$(luatex_pdf_ctangle) pdfpage.w
+# 	$(luamktex_pdf_ctangle) pdfpage.w
 # pdfrule.c: ctangle$(EXEEXT) luatexdir/pdf/pdfrule.w
-# 	$(luatex_pdf_ctangle) pdfrule.w
+# 	$(luamktex_pdf_ctangle) pdfrule.w
 # pdfsaverestore.c: ctangle$(EXEEXT) luatexdir/pdf/pdfsaverestore.w
-# 	$(luatex_pdf_ctangle) pdfsaverestore.w
+# 	$(luamktex_pdf_ctangle) pdfsaverestore.w
 # pdfsetmatrix.c: ctangle$(EXEEXT) luatexdir/pdf/pdfsetmatrix.w
-# 	$(luatex_pdf_ctangle) pdfsetmatrix.w
+# 	$(luamktex_pdf_ctangle) pdfsetmatrix.w
 # pdfshipout.c: ctangle$(EXEEXT) luatexdir/pdf/pdfshipout.w
-# 	$(luatex_pdf_ctangle) pdfshipout.w
+# 	$(luamktex_pdf_ctangle) pdfshipout.w
 # pdftables.c: ctangle$(EXEEXT) luatexdir/pdf/pdftables.w
-# 	$(luatex_pdf_ctangle) pdftables.w
+# 	$(luamktex_pdf_ctangle) pdftables.w
 # pdfthread.c: ctangle$(EXEEXT) luatexdir/pdf/pdfthread.w
-# 	$(luatex_pdf_ctangle) pdfthread.w
+# 	$(luamktex_pdf_ctangle) pdfthread.w
 # pdfxform.c: ctangle$(EXEEXT) luatexdir/pdf/pdfxform.w
-# 	$(luatex_pdf_ctangle) pdfxform.w
+# 	$(luamktex_pdf_ctangle) pdfxform.w
 
-#libluatex_web += luatexdir/pdf/pdfpagetree.w luatexdir/pdf/pdfaction.w luatexdir/pdf/pdfannot.w
-#libluatex_web += luatexdir/pdf/pdfcolorstack.w luatexdir/pdf/pdfdest.w
-#libluatex_web += luatexdir/pdf/pdffont.w luatexdir/pdf/pdfgen.w luatexdir/pdf/pdfglyph.w
-#libluatex_web += luatexdir/pdf/pdfimage.w luatexdir/pdf/pdflink.w luatexdir/pdf/pdflistout.w
-#libluatex_web += luatexdir/pdf/pdfliteral.w luatexdir/pdf/pdfobj.w
-#libluatex_web += luatexdir/pdf/pdfoutline.w luatexdir/pdf/pdfpage.w luatexdir/pdf/pdfrule.w
-#libluatex_web += luatexdir/pdf/pdfsaverestore.w luatexdir/pdf/pdfsetmatrix.w
-#libluatex_web += luatexdir/pdf/pdfshipout.w luatexdir/pdf/pdftables.w
-#libluatex_web += luatexdir/pdf/pdfthread.w luatexdir/pdf/pdfxform.w
+#libluamktex_web += luatexdir/pdf/pdfpagetree.w luatexdir/pdf/pdfaction.w luatexdir/pdf/pdfannot.w
+#libluamktex_web += luatexdir/pdf/pdfcolorstack.w luatexdir/pdf/pdfdest.w
+#libluamktex_web += luatexdir/pdf/pdffont.w luatexdir/pdf/pdfgen.w luatexdir/pdf/pdfglyph.w
+#libluamktex_web += luatexdir/pdf/pdfimage.w luatexdir/pdf/pdflink.w luatexdir/pdf/pdflistout.w
+#libluamktex_web += luatexdir/pdf/pdfliteral.w luatexdir/pdf/pdfobj.w
+#libluamktex_web += luatexdir/pdf/pdfoutline.w luatexdir/pdf/pdfpage.w luatexdir/pdf/pdfrule.w
+#libluamktex_web += luatexdir/pdf/pdfsaverestore.w luatexdir/pdf/pdfsetmatrix.w
+#libluamktex_web += luatexdir/pdf/pdfshipout.w luatexdir/pdf/pdftables.w
+#libluamktex_web += luatexdir/pdf/pdfthread.w luatexdir/pdf/pdfxform.w
 
-#nodist_libluatex_sources += pdfpagetree.c pdfaction.c pdfannot.c pdfcolorstack.c pdfdest.c pdffont.c
-#nodist_libluatex_sources += pdfgen.c pdfglyph.c pdfimage.c pdflink.c pdflistout.c pdfliteral.c
-#nodist_libluatex_sources += pdfobj.c pdfoutline.c pdfpage.c pdfrule.c pdfsaverestore.c
-#nodist_libluatex_sources += pdfsetmatrix.c pdfshipout.c pdftables.c pdfthread.c pdfxform.c
+#nodist_libluamktex_sources += pdfpagetree.c pdfaction.c pdfannot.c pdfcolorstack.c pdfdest.c pdffont.c
+#nodist_libluamktex_sources += pdfgen.c pdfglyph.c pdfimage.c pdflink.c pdflistout.c pdfliteral.c
+#nodist_libluamktex_sources += pdfobj.c pdfoutline.c pdfpage.c pdfrule.c pdfsaverestore.c
+#nodist_libluamktex_sources += pdfsetmatrix.c pdfshipout.c pdftables.c pdfthread.c pdfxform.c
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/pdf/pdfpagetree.h \
 	luatexdir/pdf/pdfaction.h \
 	luatexdir/pdf/pdfannot.h \
@@ -430,12 +430,12 @@ dist_libluatex_sources += \
 ## but still left as example.
 ## from luatexdir/scripts
 ##
-# luatex_luascripts_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/luascripts $(ctangle)
+# luamktex_luascripts_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/luascripts $(ctangle)
 
 # txt2zlib.c: ctangle$(EXEEXT) luatexdir/luascripts/txt2zlib.w
-# 	$(luatex_luascripts_ctangle) txt2zlib.w
+# 	$(luamktex_luascripts_ctangle) txt2zlib.w
 
-# libluatex_web += \
+# libluamktex_web += \
 # 	luatexdir/luascripts/pdflua.c \
 # 	luatexdir/luascripts/pdflua.lua \
 # 	luatexdir/luascripts/txt2zlib.w
@@ -454,9 +454,9 @@ dist_libluatex_sources += \
 # 	  cp -f pdflua.c $(srcdir)/luatexdir/luascripts/pdflua.c
 # endif !cross
 
-# nodist_libluatex_sources += pdflua.c
+# nodist_libluamktex_sources += pdflua.c
 
-# dist_libluatex_sources += \
+# dist_libluamktex_sources += \
 # 	luatexdir/luascripts/pdflua.h
 ################################################################################
 ################################################################################
@@ -464,77 +464,77 @@ dist_libluatex_sources += \
 
 ## from luatexdir/tex
 ##
-luatex_tex_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/tex $(ctangle)
+luamktex_tex_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/tex $(ctangle)
 
 # align.c: ctangle$(EXEEXT) luatexdir/tex/align.w
-# 	$(luatex_tex_ctangle) align.w
+# 	$(luamktex_tex_ctangle) align.w
 #arithmetic.c: ctangle$(EXEEXT) luatexdir/tex/arithmetic.w
-#	$(luatex_tex_ctangle) arithmetic.w
+#	$(luamktex_tex_ctangle) arithmetic.w
 # buildpage.c: ctangle$(EXEEXT) luatexdir/tex/buildpage.w
-# 	$(luatex_tex_ctangle) buildpage.w
+# 	$(luamktex_tex_ctangle) buildpage.w
 #commands.c: ctangle$(EXEEXT) luatexdir/tex/commands.w
-#	$(luatex_tex_ctangle) commands.w
+#	$(luamktex_tex_ctangle) commands.w
 #conditional.c: ctangle$(EXEEXT) luatexdir/tex/conditional.w
-#	$(luatex_tex_ctangle) conditional.w
+#	$(luamktex_tex_ctangle) conditional.w
 #directions.c: ctangle$(EXEEXT) luatexdir/tex/directions.w
-#	$(luatex_tex_ctangle) directions.w
+#	$(luamktex_tex_ctangle) directions.w
 #dumpdata.c: ctangle$(EXEEXT) luatexdir/tex/dumpdata.w
-#	$(luatex_tex_ctangle) dumpdata.w
+#	$(luamktex_tex_ctangle) dumpdata.w
 #equivalents.c: ctangle$(EXEEXT) luatexdir/tex/equivalents.w
-#	$(luatex_tex_ctangle) equivalents.w
+#	$(luamktex_tex_ctangle) equivalents.w
 #errors.c: ctangle$(EXEEXT) luatexdir/tex/errors.w
-#	$(luatex_tex_ctangle) errors.w
+#	$(luamktex_tex_ctangle) errors.w
 # expand.c: ctangle$(EXEEXT) luatexdir/tex/expand.w
-# 	$(luatex_tex_ctangle) expand.w
+# 	$(luamktex_tex_ctangle) expand.w
 # extensions.c: ctangle$(EXEEXT) luatexdir/tex/extensions.w
-# 	$(luatex_tex_ctangle) extensions.w
+# 	$(luamktex_tex_ctangle) extensions.w
 #filename.c: ctangle$(EXEEXT) luatexdir/tex/filename.w
-#	$(luatex_tex_ctangle) filename.w
+#	$(luamktex_tex_ctangle) filename.w
 #inputstack.c: ctangle$(EXEEXT) luatexdir/tex/inputstack.w
-#	$(luatex_tex_ctangle) inputstack.w
+#	$(luamktex_tex_ctangle) inputstack.w
 # linebreak.c: ctangle$(EXEEXT) luatexdir/tex/linebreak.w
-# 	$(luatex_tex_ctangle) linebreak.w
+# 	$(luamktex_tex_ctangle) linebreak.w
 #mainbody.c: ctangle$(EXEEXT) luatexdir/tex/mainbody.w
-#	$(luatex_tex_ctangle) mainbody.w
+#	$(luamktex_tex_ctangle) mainbody.w
 #maincontrol.c: ctangle$(EXEEXT) luatexdir/tex/maincontrol.w
-#	$(luatex_tex_ctangle) maincontrol.w
+#	$(luamktex_tex_ctangle) maincontrol.w
 #mathcodes.c: ctangle$(EXEEXT) luatexdir/tex/mathcodes.w
-#	$(luatex_tex_ctangle) mathcodes.w
+#	$(luamktex_tex_ctangle) mathcodes.w
 #memoryword.c: ctangle$(EXEEXT) luatexdir/tex/memoryword.w
-#	$(luatex_tex_ctangle) memoryword.w
+#	$(luamktex_tex_ctangle) memoryword.w
 # mlist.c: ctangle$(EXEEXT) luatexdir/tex/mlist.w
-# 	$(luatex_tex_ctangle) mlist.w
+# 	$(luamktex_tex_ctangle) mlist.w
 #nesting.c: ctangle$(EXEEXT) luatexdir/tex/nesting.w
-#	$(luatex_tex_ctangle) nesting.w
+#	$(luamktex_tex_ctangle) nesting.w
 # packaging.c: ctangle$(EXEEXT) luatexdir/tex/packaging.w
-# 	$(luatex_tex_ctangle) packaging.w
+# 	$(luamktex_tex_ctangle) packaging.w
 #postlinebreak.c: ctangle$(EXEEXT) luatexdir/tex/postlinebreak.w
-#	$(luatex_tex_ctangle) postlinebreak.w
+#	$(luamktex_tex_ctangle) postlinebreak.w
 #primitive.c: ctangle$(EXEEXT) luatexdir/tex/primitive.w
-#	$(luatex_tex_ctangle) primitive.w
+#	$(luamktex_tex_ctangle) primitive.w
 #printing.c: ctangle$(EXEEXT) luatexdir/tex/printing.w
-#	$(luatex_tex_ctangle) printing.w
+#	$(luamktex_tex_ctangle) printing.w
 # scanning.c: ctangle$(EXEEXT) luatexdir/tex/scanning.w
-# 	$(luatex_tex_ctangle) scanning.w
+# 	$(luamktex_tex_ctangle) scanning.w
 #stringpool.c: ctangle$(EXEEXT) luatexdir/tex/stringpool.w
-#	$(luatex_tex_ctangle) stringpool.w
+#	$(luamktex_tex_ctangle) stringpool.w
 #texdeffont.c: ctangle$(EXEEXT) luatexdir/tex/texdeffont.w
-#	$(luatex_tex_ctangle) texdeffont.w
+#	$(luamktex_tex_ctangle) texdeffont.w
 # texfileio.c: ctangle$(EXEEXT) luatexdir/tex/texfileio.w
-# 	$(luatex_tex_ctangle) texfileio.w
+# 	$(luamktex_tex_ctangle) texfileio.w
 # texmath.c: ctangle$(EXEEXT) luatexdir/tex/texmath.w
-# 	$(luatex_tex_ctangle) texmath.w
+# 	$(luamktex_tex_ctangle) texmath.w
 # texnodes.c: ctangle$(EXEEXT) luatexdir/tex/texnodes.w
-# 	$(luatex_tex_ctangle) texnodes.w
+# 	$(luamktex_tex_ctangle) texnodes.w
 #textcodes.c: ctangle$(EXEEXT) luatexdir/tex/textcodes.w
-#	$(luatex_tex_ctangle) textcodes.w
+#	$(luamktex_tex_ctangle) textcodes.w
 # textoken.c: ctangle$(EXEEXT) luatexdir/tex/textoken.w
-# 	$(luatex_tex_ctangle) textoken.w
+# 	$(luamktex_tex_ctangle) textoken.w
 
 
 
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/tex/align.h \
 	luatexdir/tex/arithmetic.h \
 	luatexdir/tex/backend.h \
@@ -605,22 +605,22 @@ dist_libluatex_sources += \
 
 ## from luatexdir/utils
 ##
-luatex_utils_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/utils $(ctangle)
+luamktex_utils_ctangle = $(ctangle_silent)CWEBINPUTS=$(srcdir)/luatexdir/utils $(ctangle)
 
 #avlstuff.c: ctangle$(EXEEXT) luatexdir/utils/avlstuff.w
-#	$(luatex_utils_ctangle) avlstuff.w
+#	$(luamktex_utils_ctangle) avlstuff.w
 #managed-sa.c: ctangle$(EXEEXT) luatexdir/utils/managed-sa.w
-#	$(luatex_utils_ctangle) managed-sa.w
+#	$(luamktex_utils_ctangle) managed-sa.w
 #utils.c: ctangle$(EXEEXT) luatexdir/utils/utils.w
-#	$(luatex_utils_ctangle) utils.w
+#	$(luamktex_utils_ctangle) utils.w
 #unistring.c: ctangle$(EXEEXT) luatexdir/utils/unistring.w
-#	$(luatex_utils_ctangle) unistring.w
+#	$(luamktex_utils_ctangle) unistring.w
 
-#libluatex_web += luatexdir/utils/avlstuff.w luatexdir/utils/managed-sa.w luatexdir/utils/utils.w luatexdir/utils/unistring.w
+#libluamktex_web += luatexdir/utils/avlstuff.w luatexdir/utils/managed-sa.w luatexdir/utils/utils.w luatexdir/utils/unistring.w
 
-#nodist_libluatex_sources += avlstuff.c managed-sa.c utils.c unistring.c
+#nodist_libluamktex_sources += avlstuff.c managed-sa.c utils.c unistring.c
 
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	luatexdir/utils/avl.c \
 	luatexdir/utils/avl.h \
 	luatexdir/utils/avlstuff.h \
@@ -634,19 +634,19 @@ dist_libluatex_sources += \
 
 ## from ../synctexdir
 ##
-dist_libluatex_sources += \
+dist_libluamktex_sources += \
 	synctexdir/synctex-common.h \
 	synctexdir/synctex-luatex.h \
 	synctexdir/synctex.c \
 	synctexdir/synctex.h
 
-#dist_liblua53tex_sources = $(dist_libluatex_sources)
+#dist_liblua53mktex_sources = $(dist_libluamktex_sources)
 
 EXTRA_DIST += \
-	$(dist_libluatex_sources) \
-	$(libluatex_web) 
+	$(dist_libluamktex_sources) \
+	$(libluamktex_web) 
 
-DISTCLEANFILES += $(nodist_libluatex_sources)
+DISTCLEANFILES += $(nodist_libluamktex_sources)
 
 EXTRA_DIST += \
 	luatexdir/ChangeLog \

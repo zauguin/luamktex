@@ -125,15 +125,15 @@ done
 
 #
 STRIP=strip
-LUATEXEXEJIT=luajittex
-LUATEXEXE=luatex
-LUATEXEXE53=luatex
+LUATEXEXEJIT=luajitmktex
+LUATEXEXE=luamktex
+LUATEXEXE53=luamktex
 
 
 
 case `uname` in
-  CYGWIN*	) LUATEXEXEJIT=luajittex.exe ; LUATEXEXE=luatex.exe ; LUATEXEXE53=luatex.exe ;;
-  MINGW*	) LUATEXEXEJIT=luajittex.exe ; LUATEXEXE=luatex.exe ; LUATEXEXE53=luatex.exe ;;
+  CYGWIN*	) LUATEXEXEJIT=luajitmktex.exe ; LUATEXEXE=luamktex.exe ; LUATEXEXE53=luamktex.exe ;;
+  MINGW*	) LUATEXEXEJIT=luajitmktex.exe ; LUATEXEXE=luamktex.exe ; LUATEXEXE53=luamktex.exe ;;
   Darwin	) STRIP="strip -u -r" ;;
 esac
 
@@ -186,9 +186,9 @@ then
 
   : ${CONFBUILD:=--build=$build_tripple}
   PATH=`pwd`/extrabin/mingw/$platform:/usr/mingw32/bin:$PATH
-  LUATEXEXEJIT=luajittex.exe
-  LUATEXEXE=luatex.exe
-  LUATEXEXE53=luatex.exe
+  LUATEXEXEJIT=luajitmktex.exe
+  LUATEXEXE=luamktex.exe
+  LUATEXEXE53=luamktex.exe
   RANLIB="${CONFHOST#--host=}-ranlib"
   STRIP="${CONFHOST#--host=}-strip"
 fi
@@ -289,7 +289,7 @@ LUA52ENABLE=
 
 #LUA53ENABLE=--enable-luatex53
 BUILDLUA53=TRUE
-LUA53ENABLE=--enable-luatex
+LUA53ENABLE=--enable-luamktex
 #if [ "$BUILDLUA53" = "FALSE" ]
 #then
 #  LUA53ENABLE=

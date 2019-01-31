@@ -50,11 +50,11 @@ extern void fix_o_mode(void);
 #  include "lualib.h"
 #ifdef LuajitTeX
 #  include "luajit.h"
-#  define MyName "LuajitTeX"
-#  define my_name "luajittex"
+#  define MyName "LuajitMKTeX"
+#  define my_name "luajitmktex"
 #else
-#  define MyName "LuaTeX"
-#  define my_name "luatex"
+#  define MyName "LuaMKTeX"
+#  define my_name "luamktex"
 #endif
 
 #ifdef __cplusplus
