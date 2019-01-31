@@ -2433,17 +2433,14 @@ halfword new_ligkern(halfword head, halfword tail)
     callback_id = callback_defined(ligaturing_callback);
     if (callback_id > 0) {
         tail = run_lua_ligkern_callback(head, tail, callback_id);
-        if (tail == null)
-            tail = tail_of_list(head);
+        tail = tail_of_list(head);
     } else if (callback_id == 0) {
         tail = handle_ligaturing(head, tail);
     }
     callback_id = callback_defined(kerning_callback);
     if (callback_id > 0) {
         tail = run_lua_ligkern_callback(head, tail, callback_id);
-        if (tail == null) {
-            tail = tail_of_list(head);
-        }
+        tail = tail_of_list(head);
     } else if (callback_id == 0) {
         halfword nest1 = new_node(nesting_node, 1);
         halfword cur = vlink(head);
