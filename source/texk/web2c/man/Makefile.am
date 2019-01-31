@@ -58,10 +58,10 @@ man1_links += ptex:eptex ptex:euptex ptex:uptex
 endif PTEX
 EXTRA_DIST += ptex.man
 
-if LUATEX
+if LUAMKTEX
 man_sources += luatex.man
 man1_links += luatex:texlua luatex:texluac
-endif LUATEX
+endif LUAMKTEX
 EXTRA_DIST += luatex.man
 
 if XETEX

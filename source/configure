@@ -806,9 +806,9 @@ enable_euptex_synctex
 enable_aleph
 enable_pdftex
 enable_pdftex_synctex
-enable_luatex
-enable_luatex53
-enable_luajittex
+enable_luamktex
+enable_luamktex53
+enable_luajitmktex
 enable_mp
 enable_pmp
 enable_upmp
@@ -1529,9 +1529,9 @@ Optional Features:
   --disable-aleph           do not compile and install Aleph
   --disable-pdftex          do not compile and install pdfTeX
   --disable-pdftex-synctex    build pdfTeX without SyncTeX support
-  --disable-luatex          do not compile and install LuaTeX
-  --disable-luatex53        do not compile and install LuaTeX53
-  --disable-luajittex       do not compile and install LuaJITTeX
+  --disable-luamktex        do not compile and install LuaMKTeX
+  --disable-luamktex53      do not compile and install LuaMKTeX53
+  --disable-luajitmktex     do not compile and install LuaJITMKTeX
   --disable-mp              do not compile and install MetaPost
   --disable-pmp             do not compile and install pMetaPost
   --disable-upmp            do not compile and install upMetaPost
@@ -4167,50 +4167,50 @@ test "x$enable_web2c:$enable_pdftex" = xyes:yes && {
   need_xpdf=yes
   need_libpng=yes
 }
-# Check whether --enable-luatex was given.
-if test "${enable_luatex+set}" = set; then :
-  enableval=$enable_luatex;
+# Check whether --enable-luamktex was given.
+if test "${enable_luamktex+set}" = set; then :
+  enableval=$enable_luamktex;
 fi
-case $enable_luatex in #(
+case $enable_luamktex in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luatex=yes ;;
+    enable_luamktex=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luatex" = xyes:yes && {
+test "x$enable_web2c:$enable_luamktex" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_lua52=yes
 }
-# Check whether --enable-luatex53 was given.
-if test "${enable_luatex53+set}" = set; then :
-  enableval=$enable_luatex53;
+# Check whether --enable-luamktex53 was given.
+if test "${enable_luamktex53+set}" = set; then :
+  enableval=$enable_luamktex53;
 fi
-case $enable_luatex53 in #(
+case $enable_luamktex53 in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luatex53=yes ;;
+    enable_luamktex53=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luatex53" = xyes:yes && {
+test "x$enable_web2c:$enable_luamktex53" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_lua53=yes
 }
-# Check whether --enable-luajittex was given.
-if test "${enable_luajittex+set}" = set; then :
-  enableval=$enable_luajittex;
+# Check whether --enable-luajitmktex was given.
+if test "${enable_luajitmktex+set}" = set; then :
+  enableval=$enable_luajitmktex;
 fi
-case $enable_luajittex in #(
+case $enable_luajitmktex in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luajittex=yes ;;
+    enable_luajitmktex=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luajittex" = xyes:yes && {
+test "x$enable_web2c:$enable_luajitmktex" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_luajit=yes
