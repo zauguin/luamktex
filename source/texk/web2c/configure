@@ -774,12 +774,12 @@ PMP_FALSE
 PMP_TRUE
 MP_FALSE
 MP_TRUE
-LUAJITTEX_FALSE
-LUAJITTEX_TRUE
-LUATEX53_FALSE
-LUATEX53_TRUE
-LUATEX_FALSE
-LUATEX_TRUE
+LUAJITMKTEX_FALSE
+LUAJITMKTEX_TRUE
+LUAMKTEX53_FALSE
+LUAMKTEX53_TRUE
+LUAMKTEX_FALSE
+LUAMKTEX_TRUE
 PDFTEX_SYNCTEX_FALSE
 PDFTEX_SYNCTEX_TRUE
 PDFTEX_FALSE
@@ -1006,9 +1006,9 @@ enable_euptex_synctex
 enable_aleph
 enable_pdftex
 enable_pdftex_synctex
-enable_luatex
-enable_luatex53
-enable_luajittex
+enable_luamktex
+enable_luamktex53
+enable_luajitmktex
 enable_mp
 enable_pmp
 enable_upmp
@@ -1737,9 +1737,9 @@ Optional Features:
   --disable-aleph         do not compile and install Aleph
   --disable-pdftex        do not compile and install pdfTeX
   --disable-pdftex-synctex  build pdfTeX without SyncTeX support
-  --disable-luatex        do not compile and install LuaTeX
-  --disable-luatex53      do not compile and install LuaTeX53
-  --disable-luajittex     do not compile and install LuaJITTeX
+  --disable-luamktex      do not compile and install LuaMKTeX
+  --disable-luamktex53    do not compile and install LuaMKTeX53
+  --disable-luajitmktex   do not compile and install LuaJITMKTeX
   --disable-mp            do not compile and install MetaPost
   --disable-pmp           do not compile and install pMetaPost
   --disable-upmp          do not compile and install upMetaPost
@@ -18757,50 +18757,50 @@ test "x$enable_web2c:$enable_pdftex" = xyes:yes && {
   need_xpdf=yes
   need_libpng=yes
 }
-# Check whether --enable-luatex was given.
-if test "${enable_luatex+set}" = set; then :
-  enableval=$enable_luatex;
+# Check whether --enable-luamktex was given.
+if test "${enable_luamktex+set}" = set; then :
+  enableval=$enable_luamktex;
 fi
-case $enable_luatex in #(
+case $enable_luamktex in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luatex=yes ;;
+    enable_luamktex=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luatex" = xyes:yes && {
+test "x$enable_web2c:$enable_luamktex" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_lua52=yes
 }
-# Check whether --enable-luatex53 was given.
-if test "${enable_luatex53+set}" = set; then :
-  enableval=$enable_luatex53;
+# Check whether --enable-luamktex53 was given.
+if test "${enable_luamktex53+set}" = set; then :
+  enableval=$enable_luamktex53;
 fi
-case $enable_luatex53 in #(
+case $enable_luamktex53 in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luatex53=yes ;;
+    enable_luamktex53=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luatex53" = xyes:yes && {
+test "x$enable_web2c:$enable_luamktex53" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_lua53=yes
 }
-# Check whether --enable-luajittex was given.
-if test "${enable_luajittex+set}" = set; then :
-  enableval=$enable_luajittex;
+# Check whether --enable-luajitmktex was given.
+if test "${enable_luajitmktex+set}" = set; then :
+  enableval=$enable_luajitmktex;
 fi
-case $enable_luajittex in #(
+case $enable_luajitmktex in #(
   yes | no) :
      ;; #(
   *) :
-    enable_luajittex=yes ;;
+    enable_luajitmktex=yes ;;
 esac
 
-test "x$enable_web2c:$enable_luajittex" = xyes:yes && {
+test "x$enable_web2c:$enable_luajitmktex" = xyes:yes && {
   need_libpng=yes
   need_zziplib=yes
   need_luajit=yes
@@ -20314,24 +20314,24 @@ case $ac_cv_search_connect in #(
   "none required") :
      ;; #(
   no) :
-    if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no socket library: disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no socket library: disabling luatex" >&2;}
+    if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no socket library: disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no socket library: disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
 
-	       if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no socket library: disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no socket library: disabling luatex53" >&2;}
+	       if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no socket library: disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no socket library: disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
 
                if test "x$enable_ipc" = xyes; then :
@@ -20754,23 +20754,23 @@ esac
   "none required") :
      ;; #(
   no) :
-    if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no hstrerror(): disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no hstrerror(): disabling luatex" >&2;}
+    if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no hstrerror(): disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no hstrerror(): disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
- if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no hstrerror(): disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no hstrerror(): disabling luatex53" >&2;}
+ if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no hstrerror(): disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no hstrerror(): disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
  ;; #(
   *) :
@@ -20780,23 +20780,23 @@ esac
   "none required") :
      ;; #(
   no) :
-    if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no inet_aton(): disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no inet_aton(): disabling luatex" >&2;}
+    if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no inet_aton(): disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no inet_aton(): disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
- if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no inet_aton(): disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no inet_aton(): disabling luatex53" >&2;}
+ if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no inet_aton(): disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no inet_aton(): disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
  ;; #(
   *) :
@@ -20806,23 +20806,23 @@ esac
   "none required") :
      ;; #(
   no) :
-    if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no gethostbyname(): disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no gethostbyname(): disabling luatex" >&2;}
+    if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no gethostbyname(): disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no gethostbyname(): disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
- if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no gethostbyname(): disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no gethostbyname(): disabling luatex53" >&2;}
+ if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no gethostbyname(): disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no gethostbyname(): disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
  ;; #(
   *) :
@@ -20832,23 +20832,23 @@ esac
   "none required") :
      ;; #(
   no) :
-    if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no nanosleep(): disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no nanosleep(): disabling luatex" >&2;}
+    if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no nanosleep(): disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no nanosleep(): disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
- if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no nanosleep(): disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no nanosleep(): disabling luatex53" >&2;}
+ if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no nanosleep(): disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no nanosleep(): disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
  ;; #(
   *) :
@@ -20888,23 +20888,23 @@ $as_echo "$ac_cv_lib_ws2_32_main" >&6; }
 if test "x$ac_cv_lib_ws2_32_main" = xyes; then :
   lua_socketlibs="$socketlibs -lws2_32"
 else
-  if test "x$enable_luatex" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no getaddrinfo(): disabling luatex" >&5
-$as_echo "$as_me: WARNING: Sorry, no getaddrinfo(): disabling luatex" >&2;}
+  if test "x$enable_luamktex" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no getaddrinfo(): disabling luamktex" >&5
+$as_echo "$as_me: WARNING: Sorry, no getaddrinfo(): disabling luamktex" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex=no
+                       enable_luamktex=no
 fi
- if test "x$enable_luatex53" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no getaddrinfo(): disabling luatex53" >&5
-$as_echo "$as_me: WARNING: Sorry, no getaddrinfo(): disabling luatex53" >&2;}
+ if test "x$enable_luamktex53" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sorry, no getaddrinfo(): disabling luamktex53" >&5
+$as_echo "$as_me: WARNING: Sorry, no getaddrinfo(): disabling luamktex53" >&2;}
 if test "x$enable_missing" = xno; then :
   as_fn_error $? "terminating." "$LINENO" 5
 fi
 
-                       enable_luatex53=no
+                       enable_luamktex53=no
 fi
 
 fi
@@ -21333,26 +21333,26 @@ else
   PDFTEX_SYNCTEX_TRUE='#'
   PDFTEX_SYNCTEX_FALSE=
 fi
- if test "x$enable_luatex" = xyes; then
-  LUATEX_TRUE=
-  LUATEX_FALSE='#'
+ if test "x$enable_luamktex" = xyes; then
+  LUAMKTEX_TRUE=
+  LUAMKTEX_FALSE='#'
 else
-  LUATEX_TRUE='#'
-  LUATEX_FALSE=
+  LUAMKTEX_TRUE='#'
+  LUAMKTEX_FALSE=
 fi
- if test "x$enable_luatex53" = xyes; then
-  LUATEX53_TRUE=
-  LUATEX53_FALSE='#'
+ if test "x$enable_luamktex53" = xyes; then
+  LUAMKTEX53_TRUE=
+  LUAMKTEX53_FALSE='#'
 else
-  LUATEX53_TRUE='#'
-  LUATEX53_FALSE=
+  LUAMKTEX53_TRUE='#'
+  LUAMKTEX53_FALSE=
 fi
- if test "x$enable_luajittex" = xyes; then
-  LUAJITTEX_TRUE=
-  LUAJITTEX_FALSE='#'
+ if test "x$enable_luajitmktex" = xyes; then
+  LUAJITMKTEX_TRUE=
+  LUAJITMKTEX_FALSE='#'
 else
-  LUAJITTEX_TRUE='#'
-  LUAJITTEX_FALSE=
+  LUAJITMKTEX_TRUE='#'
+  LUAJITMKTEX_FALSE=
 fi
  if test "x$enable_mp" = xyes; then
   MP_TRUE=
@@ -26510,16 +26510,16 @@ if test -z "${PDFTEX_SYNCTEX_TRUE}" && test -z "${PDFTEX_SYNCTEX_FALSE}"; then
   as_fn_error $? "conditional \"PDFTEX_SYNCTEX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${LUATEX_TRUE}" && test -z "${LUATEX_FALSE}"; then
-  as_fn_error $? "conditional \"LUATEX\" was never defined.
+if test -z "${LUAMKTEX_TRUE}" && test -z "${LUAMKTEX_FALSE}"; then
+  as_fn_error $? "conditional \"LUAMKTEX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${LUATEX53_TRUE}" && test -z "${LUATEX53_FALSE}"; then
-  as_fn_error $? "conditional \"LUATEX53\" was never defined.
+if test -z "${LUAMKTEX53_TRUE}" && test -z "${LUAMKTEX53_FALSE}"; then
+  as_fn_error $? "conditional \"LUAMKTEX53\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${LUAJITTEX_TRUE}" && test -z "${LUAJITTEX_FALSE}"; then
-  as_fn_error $? "conditional \"LUAJITTEX\" was never defined.
+if test -z "${LUAJITMKTEX_TRUE}" && test -z "${LUAJITMKTEX_FALSE}"; then
+  as_fn_error $? "conditional \"LUAJITMKTEX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MP_TRUE}" && test -z "${MP_FALSE}"; then

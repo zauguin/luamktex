@@ -89,8 +89,8 @@ AS_CASE([$enable_ipc],
 KPSE_CHECK_SOCKET_LIBS
 AS_CASE([$ac_cv_search_connect],
         ["none required"], [],
-        [no], [WEB2C_DISABLE([luatex], [no socket library])
-	       WEB2C_DISABLE([luatex53], [no socket library])
+        [no], [WEB2C_DISABLE([luamktex], [no socket library])
+	       WEB2C_DISABLE([luamktex53], [no socket library])
                WEB2C_DISABLE([ipc], [no socket library])],
             [socketlibs=$ac_cv_search_connect])
 if test "x$enable_ipc" = xyes; then
@@ -120,24 +120,24 @@ if test "x$kpse_cv_have_win32" = xno; then
                           [lua_socketlibs="$lua_socketlibs $ac_cv_search_dlopen"])])
   AS_CASE([$ac_cv_search_hstrerror],
           ["none required"], [],
-          [no], [WEB2C_DISABLE([luatex], [no hstrerror()]) WEB2C_DISABLE([luatex53], [no hstrerror()])],
+          [no], [WEB2C_DISABLE([luamktex], [no hstrerror()]) WEB2C_DISABLE([luamktex53], [no hstrerror()])],
               [lua_socketlibs="$lua_socketlibs $ac_cv_search_hstrerror"])
   AS_CASE([$ac_cv_search_inet_aton],
           ["none required"], [],
-          [no], [WEB2C_DISABLE([luatex], [no inet_aton()]) WEB2C_DISABLE([luatex53], [no inet_aton()])],
+          [no], [WEB2C_DISABLE([luamktex], [no inet_aton()]) WEB2C_DISABLE([luamktex53], [no inet_aton()])],
               [lua_socketlibs="$lua_socketlibs $ac_cv_search_inet_aton"])
   AS_CASE([$ac_cv_search_gethostbyname],
           ["none required"], [],
-          [no], [WEB2C_DISABLE([luatex], [no gethostbyname()]) WEB2C_DISABLE([luatex53], [no gethostbyname()])],
+          [no], [WEB2C_DISABLE([luamktex], [no gethostbyname()]) WEB2C_DISABLE([luamktex53], [no gethostbyname()])],
               [lua_socketlibs="$lua_socketlibs $ac_cv_search_gethostbyname"])
   AS_CASE([$ac_cv_search_nanosleep],
           ["none required"], [],
-          [no], [WEB2C_DISABLE([luatex], [no nanosleep()]) WEB2C_DISABLE([luatex53], [no nanosleep()])],
+          [no], [WEB2C_DISABLE([luamktex], [no nanosleep()]) WEB2C_DISABLE([luamktex53], [no nanosleep()])],
               [lua_socketlibs="$lua_socketlibs $ac_cv_search_nanosleep"])
 else
   AC_CHECK_LIB([ws2_32], [main],
                [lua_socketlibs="$socketlibs -lws2_32"],
-               [WEB2C_DISABLE([luatex], [no getaddrinfo()]) WEB2C_DISABLE([luatex53], [no getaddrinfo()])])
+               [WEB2C_DISABLE([luamktex], [no getaddrinfo()]) WEB2C_DISABLE([luamktex53], [no getaddrinfo()])])
 fi
 AM_CONDITIONAL([USE_DLOPEN], [test "x$ac_cv_header_dlfcn_h" = xyes])
 AC_SUBST([lua_socketlibs])

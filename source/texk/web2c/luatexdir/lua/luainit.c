@@ -309,11 +309,11 @@ static void parse_options(int ac, char **av)
     /*tex Dont whine. */
     opterr = 0;
 #ifdef LuajitTeX
-    if ((strstr(argv[0], "luajittexlua") != NULL) ||
-        (strstr(argv[0], "texluajit") != NULL)) {
+    if ((strstr(argv[0], "luajitmktexlua") != NULL) ||
+        (strstr(argv[0], "texmkluajit") != NULL)) {
 #else
-    if ((strstr(argv[0], "luatexlua") != NULL) ||
-        (strstr(argv[0], "texlua") != NULL)) {
+    if ((strstr(argv[0], "luamktexlua") != NULL) ||
+        (strstr(argv[0], "texmklua") != NULL)) {
 #endif
         lua_only = 1;
         luainit = 1;
@@ -906,7 +906,7 @@ void lua_initialize(int ac, char **av)
     /*tex be `luac' */
     if (argc >1) {
 #ifdef LuajitTeX
-        if (FILESTRCASEEQ(kpse_invocation_name, "texluajitc"))
+        if (FILESTRCASEEQ(kpse_invocation_name, "texmkluajitc"))
             exit(luac_main(ac, av));
         if (STREQ(argv[1], "--luaconly") || STREQ(argv[1], "--luac")) {
             char *argv1 = xmalloc (strlen ("luajittex") + 1);
@@ -915,7 +915,7 @@ void lua_initialize(int ac, char **av)
             exit(luac_main(--ac, ++av));
         }
 #else
-        if (FILESTRCASEEQ(kpse_invocation_name, "texluac"))
+        if (FILESTRCASEEQ(kpse_invocation_name, "texmkluac"))
             exit(luac_main(ac, av));
         if (STREQ(argv[1], "--luaconly") || STREQ(argv[1], "--luac")) {
             strcpy(av[1], "luatex");
