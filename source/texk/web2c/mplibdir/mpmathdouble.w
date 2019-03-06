@@ -705,6 +705,10 @@ static void find_exponent (MP mp)  {
      }     
      if (mp->buffer[mp->cur_input.loc_field] == '+' || 
         mp->buffer[mp->cur_input.loc_field] == '-') {
+        if (mp->char_class[mp->buffer[mp->cur_input.loc_field]] != digit_class) {
+          mp->cur_input.loc_field--;
+          return;
+        }
         mp->cur_input.loc_field++;
      }
      while (mp->char_class[mp->buffer[mp->cur_input.loc_field]] == digit_class) {
