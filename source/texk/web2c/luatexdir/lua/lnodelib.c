@@ -7433,7 +7433,7 @@ static int lua_nodelib_direct_setfield_whatsit(lua_State * L, int n, const char 
         }
     } else if (t == write_node) {
         if (lua_key_eq(s, stream)) {
-            set_write_direct_value(L,n,3);
+            write_stream(n) = (halfword) lua_tointeger(L, 3);
         } else if (lua_key_eq(s, data)) {
             set_write_direct_value(L,n,3);
         } else {
