@@ -409,7 +409,6 @@ buffering, which works well because most of the output actually comes through
     buffer[i++] = '\0';\
     fputs(buffer, target); \
     i = 0; \
-    buffer[0] = '\0'; \
     offset=0;
 
 void tprint(const char *sss)
@@ -465,7 +464,7 @@ void tprint(const char *sss)
     }
     /*tex What is left is the 3 term/log settings. */
     if (dolog || doterm) {
-        buffer = xmalloc(strlen(sss)*3);
+        buffer = xmalloc(strlen(sss)*3+2);
         /*tex The |wrapup_run| callback acts when the log file is already closed.*/
         if (dolog && log_opened_global) {
             const unsigned char *ss = (const unsigned char *) sss;
@@ -481,10 +480,9 @@ void tprint(const char *sss)
                     }
                 }
             }
-            if (*buffer) {
+            if (i) {
                 buffer[i++] = '\0';
                 fputs(buffer, log_file);
-                buffer[0] = '\0';
             }
             i = 0;
         }
@@ -499,17 +497,19 @@ void tprint(const char *sss)
                     if (needs_escaping(s)) {
                         buffer[i++] = s;
                     } else {
+                        if ((term_offset += 2) >= max_print_line) {
+                            t_flush_buffer(term_out,term_offset);
+                        }
                         buffer[i++] = '^';
                         buffer[i++] = '^';
                         buffer[i++] = escaped_char(s);
-                        term_offset += 2;
                     }
                     if (++term_offset == max_print_line) {
                         t_flush_buffer(term_out,term_offset);
                     }
                 }
             }
-            if (*buffer) {
+            if (i) {
                 buffer[i++] = '\0';
                 fputs(buffer, term_out);
             }

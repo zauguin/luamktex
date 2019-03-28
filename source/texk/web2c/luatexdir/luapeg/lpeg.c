@@ -2908,9 +2908,10 @@ static TTree *auxemptycap (TTree *tree, int cap) {
 ** Create a tree for an empty capture
 */
 static TTree *newemptycap (lua_State *L, int cap) {
-  return auxemptycap(newtree(L, 2), cap);
+  TTree *tree = auxemptycap(newtree(L, 2), cap);
+  tree->key = 0;
+  return tree;
 }
-
 
 /*
 ** Create a tree for an empty capture with an associated Lua value
