@@ -96,6 +96,7 @@ int luaopen_mplib(lua_State * L);
 /*tex In the next array entry 0 is not used */
 
 static int mplib_type_Ses[mp_special_code + 1] = { 0 };
+static int mplib_tfm_type_Ses[5] = { };
 
 mplib_make_S(term);
 mplib_make_S(error);
@@ -120,6 +121,12 @@ mplib_make_S(start_bounds);
 mplib_make_S(stop_bounds);
 mplib_make_S(start_clip);
 mplib_make_S(stop_clip);
+
+mplib_make_S(char_list);
+mplib_make_S(lig_table);
+mplib_make_S(extensible);
+mplib_make_S(header_byte);
+mplib_make_S(font_dimen);
 
 mplib_make_S(left_type);
 mplib_make_S(right_type);
@@ -189,6 +196,18 @@ static void mplib_init_Ses(lua_State * L)
     mplib_type_Ses[mp_start_clip_code] = mplib_start_clip_index;
     mplib_type_Ses[mp_stop_clip_code] = mplib_stop_clip_index;
     mplib_type_Ses[mp_special_code] = mplib_special_index;
+
+    mplib_init_S(char_list);
+    mplib_init_S(lig_table);
+    mplib_init_S(extensible);
+    mplib_init_S(header_byte);
+    mplib_init_S(font_dimen);
+
+    mplib_tfm_type_Ses[0] = mplib_char_list_index;
+    mplib_tfm_type_Ses[1] = mplib_lig_table_index;
+    mplib_tfm_type_Ses[2] = mplib_extensible_index;
+    mplib_tfm_type_Ses[3] = mplib_header_byte_index;
+    mplib_tfm_type_Ses[4] = mplib_font_dimen_index;
 
     mplib_init_S(left_type);
     mplib_init_S(right_type);
@@ -293,6 +312,7 @@ typedef enum {
     P_RUN_SCRIPT,
     P_MAKE_TEXT,
     P_SCRIPT_ERROR,
+    P_TFM_HANDLER,
     P_EXTENSIONS,
     P__SENTINEL
 } mplib_parm_idx;
@@ -314,6 +334,7 @@ static mplib_parm_struct mplib_parms[] = {
     {"run_script",   P_RUN_SCRIPT   },
     {"make_text",    P_MAKE_TEXT    },
     {"script_error", P_SCRIPT_ERROR },
+    {"tfm_handler",  P_TFM_HANDLER  },
     {"extensions",   P_EXTENSIONS   },
     {"math_mode",    P_MATH_MODE    },
     {NULL,           P__SENTINEL    }
@@ -402,6 +423,109 @@ static int mplib_script_error_function(lua_State * L)
         return 1;
     }
     lua_pushstring(L, "script_error");
+    lua_pushvalue(L, -2);
+    lua_rawset(L, -4);
+    return 0;
+}
+
+static void mplib_tfm_argument_to_lua(MP mp, lua_State *L, boolean isstring, union mp_tfm_single_argument *arg) {
+  if (isstring) {
+    if (arg->string)
+      lua_pushlstring(L, (const char *)arg->string->str, arg->string->len);
+    else
+      lua_pushnil(L);
+  } else {
+    lua_pushnumber(L, mp_number_as_double(mp, arg->number));
+  }
+}
+
+static void mplib_tfm_handler(MP mp, int mode, mp_tfm_arguments *args, mp_tfm_argument_scanner scanner)
+{
+    lua_State *L = (lua_State *)mp_userdata(mp);
+    lua_checkstack(L, 2);
+    lua_getuservalue(L, 1);
+    lua_getfield(L, -1, "tfm_handler");
+    lua_replace(L, -2);
+    if (lua_isfunction(L, -1)) {
+      int k = 1;
+      lua_rawgeti(L, LUA_REGISTRYINDEX, mplib_tfm_type_Ses[mode]);
+      switch(mode) {
+      case 0:
+      case 2:
+      case 3:
+      case 4:
+        k++, mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+        while (scanner(mp, args))
+          k++, mplib_tfm_argument_to_lua (mp, L, args->a1string, &args->arg[1]);
+        break;
+      case 1:
+        while (scanner(mp, args)) {
+          ++k;
+          lua_newtable(L);
+          lua_pushliteral(L, "type");
+          switch (args->type) {
+            case 17:
+              lua_pushliteral(L, "skipto");
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "label");
+              mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+              lua_rawset(L, -3);
+              break;
+            case 18:
+              lua_pushliteral(L, "charlabel");
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "char");
+              mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+              lua_rawset(L, -3);
+              break;
+            case 19:
+              lua_pushliteral(L, "label");
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "label");
+              mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+              lua_rawset(L, -3);
+              break;
+            case 16:
+              lua_pushliteral(L, "kern");
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "char");
+              mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "kern");
+              mplib_tfm_argument_to_lua (mp, L, args->a1string, &args->arg[1]);
+              lua_rawset(L, -3);
+              break;
+            default:
+              lua_pushliteral(L, "lig");
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "subtype");
+              lua_pushinteger(L, args->type);
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "char");
+              mplib_tfm_argument_to_lua (mp, L, args->a0string, &args->arg[0]);
+              lua_rawset(L, -3);
+              lua_pushliteral(L, "lig");
+              mplib_tfm_argument_to_lua (mp, L, args->a1string, &args->arg[1]);
+              lua_rawset(L, -3);
+              break;
+          }
+        }
+        break;
+      }
+      /*tex We assume that the function is okay. */
+      lua_pcall(L, k, 0, 0);
+    } else {
+      mp_handle_tfm (mp, mode, args, scanner);
+    }
+}
+
+static int mplib_tfm_handler_function(lua_State * L)
+{
+    if (!(lua_isfunction(L, -1) || lua_isnil(L, -1))) {
+        /*tex An error. */
+        return 1;
+    }
+    lua_pushstring(L, "tfm_handler");
     lua_pushvalue(L, -2);
     lua_rawset(L, -4);
     return 0;
@@ -550,6 +674,7 @@ static int mplib_new(lua_State * L)
         options->run_script = mplib_run_script;
         options->make_text = mplib_make_text;
     /*  options->script_error = mplib_script_error; */
+        options->handle_tfm = mplib_tfm_handler;
         options->print_found_names = 1;
         options->ini_version = 1;
         /*tex Here we create the uservalue table for the callbacks: */
@@ -605,6 +730,11 @@ static int mplib_new(lua_State * L)
                     case P_SCRIPT_ERROR:
                         if (mplib_script_error_function(L)) {
                             mplib_warning("function expected for 'script_error'");
+                        }
+                        break;
+                    case P_TFM_HANDLER:
+                        if (mplib_tfm_handler_function(L)) {
+                            mplib_warning("function expected for 'tfm_handler'");
                         }
                         break;
                     case P_EXTENSIONS:

@@ -29567,7 +29567,10 @@ void mp_do_statement (MP mp) {                               /* governs \MP's ac
       mp_do_write (mp);
       break;
     case mp_tfm_command:
-      mp_do_tfm_command (mp);
+      if (mp->extensions == 1)
+        mp_do_tfm_command_ext (mp);
+      else
+        mp_do_tfm_command (mp);
       break;
     case mp_special_command:
       if (cur_mod() == 0)
@@ -33149,9 +33152,438 @@ void mp_set_tag (MP mp, halfword c, quarterword t, halfword r) {
   mp_get_x_next (mp);
 }
 
+@ @<Exported types@>=
+typedef struct {
+  unsigned char type:6, a0string:1, a1string:1;
+  union mp_tfm_single_argument {
+    mp_number number;
+    mp_string string;
+  } arg[2];
+} mp_tfm_arguments;
+typedef boolean (*mp_tfm_argument_scanner) (MP mp, mp_tfm_arguments*);
+typedef void (*mp_tfm_handler) (MP mp, int, mp_tfm_arguments*, mp_tfm_argument_scanner);
+
+@ @<Exported function ...@>=
+void mp_handle_tfm (MP mp, int code, mp_tfm_arguments *args, mp_tfm_argument_scanner scanner);
+
+@ @<Option variables@>=
+mp_tfm_handler handle_tfm;
+
+@ @<Allocate or initialize ...@>=
+set_callback_option (handle_tfm);
+
+@ @c
+void mp_handle_tfm (MP mp, int code, mp_tfm_arguments *args, mp_tfm_argument_scanner scanner) {
+  int k;
+  switch (code) {
+  case char_list_code:
+    /* we will store a list of character successors */
+    k = mp_tfm_argument_to_code (mp, 0, args);
+    while (scanner(mp, args)) {
+      eight_bits val = mp_tfm_argument_to_code (mp, 1, args);
+      mp_set_tag (mp, k, list_tag, val);
+      k = val;
+    }
+    break;
+  case lig_table_code:
+    if (mp->lig_kern == NULL)
+      mp->lig_kern = xmalloc ((max_tfm_int + 1), sizeof (four_quarters));
+    if (mp->kern == NULL) {
+      int i;
+      mp->kern = xmalloc ((max_tfm_int + 1), sizeof (mp_number));
+      for (i=0;i<(max_tfm_int + 1);i++)
+         new_number (mp->kern[i]);
+    }
+    while (scanner(mp, args)) {
+      if (args->a0string && !args->arg[0].string)
+        k = 256;
+      else
+        k = mp_tfm_argument_to_code (mp, 0, args);
+      switch(args->type) {
+      case 17:
+        if (mp->nl - mp->skip_table[k] > 128) {
+          skip_error (mp->skip_table[k]);
+          mp->skip_table[k] = (short) undefined_label;
+        }
+        if (mp->skip_table[k] == undefined_label)
+          skip_byte (mp->nl - 1) = qi (0);
+        else
+          skip_byte (mp->nl - 1) = qi (mp->nl - mp->skip_table[k] - 1);
+        mp->skip_table[k] = (short) (mp->nl - 1);
+        return;
+      case 18:
+        if (k == 256)
+          mp->bch_label = mp->nl;
+        else
+          mp_set_tag (mp, k, lig_tag, mp->nl);
+        continue;
+      case 19:
+        if (mp->skip_table[k] < undefined_label) {
+          mp->ll = mp->skip_table[k];
+          mp->skip_table[k] = undefined_label;
+          do {
+            mp->lll = qo (skip_byte (mp->ll));
+            if (mp->nl - mp->ll > 128) {
+              skip_error (mp->ll);
+              continue;
+            }
+            skip_byte (mp->ll) = qi (mp->nl - mp->ll - 1);
+            mp->ll = (short) (mp->ll - mp->lll);
+          } while (mp->lll != 0);
+        }
+        continue;
+      case 16:
+        next_char (mp->nl) = qi (k);
+        if (args->a1string) {
+          const char *hlp[] =  {
+               "The amount of kern should be a known numeric value.",
+               "I'm zeroing this one. Proceed, with fingers crossed.",
+               NULL };
+          mp_disp_err(mp, NULL);
+          set_number_to_zero (mp->kern[mp->nk]);
+          mp_back_error (mp, "Improper kern", hlp, true);
+@.Improper kern@>;
+          mp_get_x_next (mp);
+        } else
+          number_clone (mp->kern[mp->nk], args->arg[1].number);
+        k = 0;
+        while (!number_equal (mp->kern[k], mp->kern[mp->nk]))
+          incr (k);
+        if (k == mp->nk) {
+          if (mp->nk == max_tfm_int)
+            mp_fatal_error (mp, "too many TFM kerns");
+          mp->nk++;
+        }
+        op_byte (mp->nl) = qi (kern_flag + (k / 256));
+        rem_byte (mp->nl) = qi ((k % 256));
+        skip_byte (mp->nl) = 0;
+        break;
+      case 31:
+        next_char (mp->nl) = qi (0);
+        op_byte (mp->nl) = qi (0);
+        rem_byte (mp->nl) = qi (0);
+        skip_byte (mp->nl) = stop_flag + 1; /* this specifies an unconditional stop */
+        break;
+      default:
+        next_char (mp->nl) = qi (k);
+        op_byte (mp->nl) = qi (args->type);
+        rem_byte (mp->nl) = qi (mp_tfm_argument_to_code (mp, 1, args));
+        skip_byte (mp->nl) = 0;
+      }
+      if (mp->nl == max_tfm_int)
+        mp_fatal_error (mp, "ligtable too large");
+      mp->nl++;
+    }
+    if (skip_byte (mp->nl - 1) < stop_flag)
+      skip_byte (mp->nl - 1) = stop_flag;
+    break;
+  case extensible_code:
+    if (mp->ne == 256)
+      mp_fatal_error (mp, "too many extensible recipies");
+    mp_set_tag (mp, mp_tfm_argument_to_code (mp, 0, args), ext_tag, mp->ne);
+    scanner(mp, args);
+    ext_top (mp->ne) = qi (mp_tfm_argument_to_code (mp, 1, args));
+    scanner(mp, args);
+    ext_mid (mp->ne) = qi (mp_tfm_argument_to_code (mp, 1, args));
+    scanner(mp, args);
+    ext_bot (mp->ne) = qi (mp_tfm_argument_to_code (mp, 1, args));
+    scanner(mp, args);
+    ext_rep (mp->ne) = qi (mp_tfm_argument_to_code (mp, 1, args));
+    mp->ne++;
+    break;
+  case header_byte_code:
+    if (args->a0string || number_less(args->arg[0].number, half_unit_t)) {
+      const char *hlp[] = {
+             "I was looking for a known, positive number.",
+             "For safety's sake I'll ignore the present command.",
+             NULL };
+      mp_disp_err(mp, NULL);
+      mp_back_error (mp, "Improper location", hlp, true);
+@.Improper location@>;
+      mp_get_x_next (mp);
+      break;
+    }
+    k = mp_tfm_argument_to_code (mp, 0, args);
+    k--;
+    if (mp->header_last<k){
+      mp->header_last=k;
+    }
+    while (scanner(mp, args)) {
+      if (k >= mp->header_size) {
+        size_t l = (size_t) (mp->header_size + (mp->header_size / 4));
+        char *t = xmalloc (l, 1);
+        memset (t, 0, l);
+        (void) memcpy (t, mp->header_byte, (size_t) mp->header_size);
+        xfree (mp->header_byte);
+        mp->header_byte = t;
+        mp->header_size = (int) l;
+      }
+      mp->header_byte[k] = (char) mp_tfm_argument_to_code (mp, 1, args);
+      if (mp->header_last<k){
+        incr (mp->header_last);
+      }
+      incr (k);
+    }
+    break;
+  case font_dimen_code:
+    if (mp->param == NULL) {
+      int i;
+      mp->param = xmalloc ((max_tfm_int + 1), sizeof (mp_number));
+      for (i=0;i<(max_tfm_int + 1);i++)
+         new_number (mp->param[i]);
+    }
+    if (args->a0string || number_less(args->arg[0].number, half_unit_t)) {
+      const char *hlp[] = {
+             "I was looking for a known, positive number.",
+             "For safety's sake I'll ignore the present command.",
+             NULL };
+      mp_disp_err(mp, NULL);
+      mp_back_error (mp, "Improper location", hlp, true);
+@.Improper location@>;
+      mp_get_x_next (mp);
+      break;
+    }
+    k = round_unscaled (args->arg[0].number);
+    while (scanner(mp, args)) {
+      if (k > max_tfm_int)
+        mp_fatal_error (mp, "too many fontdimens");
+      while (k > mp->np) {
+        mp->np++;
+        set_number_to_zero(mp->param[mp->np]);
+      };
+      if (args->a1string) {
+        const char *hlp[] = { "I'm zeroing this one. Proceed, with fingers crossed.", NULL };
+        mp_disp_err(mp, NULL);
+        set_number_to_zero (mp->param[k]);
+        mp_back_error (mp, "Improper font parameter", hlp, true);
+@.Improper font parameter@>;
+        mp_get_x_next (mp);
+      } else {
+        number_clone (mp->param[k], args->arg[1].number);
+      }
+      incr (k);
+    }
+    break;
+  }
+}
+
 
 @ @<Declare action procedures for use by |do_statement|@>=
 static void mp_do_tfm_command (MP mp);
+static void mp_do_tfm_command_ext (MP mp);
+static eight_bits mp_tfm_argument_to_code (MP mp, int i, mp_tfm_arguments *args);
+static void mp_get_tfm_argument (MP mp, int i, mp_tfm_arguments *args);
+static void mp_clear_tfm_argument (MP mp, int i, mp_tfm_arguments *args);
+static boolean mp_char_list_argument_scanner (MP mp, mp_tfm_arguments *args);
+static boolean mp_lig_table_argument_scanner (MP mp, mp_tfm_arguments *args);
+static boolean mp_comma_argument_scanner (MP mp, mp_tfm_arguments *args);
+
+@ @c
+static eight_bits mp_tfm_argument_to_code (MP mp, int i, mp_tfm_arguments *args) {
+  const char *hlp[] = {
+         "I was looking for a number between 0 and 255, or for a",
+         "string of length 1. Didn't find it; will use 0 instead.",
+          NULL };
+  integer c;    /* the code value found */
+  if ((i == 0 && !args->a0string) || (i == 1 && !args->a1string)) {
+    c = round_unscaled (args->arg[i].number);
+    if (c >= 0)
+      if (c < 256)
+        return (eight_bits) c;
+  } else if (args->arg[i].string) {
+    if (args->arg[i].string->len == 1) {
+      c = (integer) (*(args->arg[i].string->str));
+      return (eight_bits) c;
+    }
+  }
+  mp_disp_err(mp, NULL);
+  mp_back_error (mp, "Invalid code has been replaced by 0", hlp, true);
+@.Invalid code...@>;
+  mp_get_x_next (mp);
+  c = 0;
+  return (eight_bits) c;
+  ;
+}
+
+@ @c
+static void mp_get_tfm_argument (MP mp, int i, mp_tfm_arguments *args) {
+  mp_value new_expr;
+  union mp_tfm_single_argument *arg = &args->arg[i];
+  const char *hlp[] = {
+         "I was looking for a number or a string. I did not find",
+         "it, so I will use 0 instead.",
+          NULL };
+  memset(&new_expr,0,sizeof(mp_value));
+  new_number(new_expr.data.n);
+  mp_get_x_next (mp);
+  mp_scan_expression (mp);
+  if (mp->cur_exp.type == mp_string_type) {
+    if (i) {
+      if (args->a1string) {
+        if (arg->string)
+          delete_str_ref (arg->string);
+      } else {
+        free_number (arg->number);
+        args->a1string = true;
+      }
+    } else {
+      if (args->a0string) {
+        if (arg->string)
+          delete_str_ref (arg->string);
+      } else {
+        free_number (arg->number);
+        args->a0string = true;
+      }
+    }
+    arg->string = cur_exp_str();
+    add_str_ref (arg->string);
+    return;
+  }
+  if (i) {
+    if (args->a1string) {
+      if (arg->string)
+        delete_str_ref (arg->string);
+      new_number (arg->number);
+      args->a1string = false;
+    }
+  } else {
+    if (args->a0string) {
+      if (arg->string)
+        delete_str_ref (arg->string);
+      new_number (arg->number);
+      args->a0string = false;
+    }
+  }
+  if (mp->cur_exp.type == mp_known) {
+    number_clone (arg->number, cur_exp_value_number ());
+    return;
+  }
+  mp_disp_err(mp, NULL);
+  set_number_to_zero (new_expr.data.n);
+  mp_back_error (mp, "Invalid argument has been replaced by 0", hlp, true);
+@.Invalid argument...@>;
+  mp_get_x_next (mp);
+  mp_flush_cur_exp (mp, new_expr);
+  set_number_to_zero (arg->number);
+}
+
+@ @c
+static void mp_clear_tfm_argument (MP mp, int i, mp_tfm_arguments *args) {
+  if (i ? args->a1string : args->a0string) {
+    if (args->arg[i].string)
+      delete_str_ref (args->arg[i].string);
+  } else {
+    free_number (args->arg[i].number);
+    if (i)
+      args->a1string = true;
+    else
+      args->a0string = true;
+  }
+  args->arg[i].string = NULL;
+}
+
+@ @c
+static boolean mp_char_list_argument_scanner (MP mp, mp_tfm_arguments *args) {
+  if (cur_cmd() != mp_colon)
+    return false;
+  mp_get_tfm_argument (mp, 1, args);
+  return true;
+}
+
+@ @c
+static boolean mp_comma_argument_scanner (MP mp, mp_tfm_arguments *args) {
+  if (cur_cmd() != mp_comma)
+    return false;
+  mp_get_tfm_argument (mp, 1, args);
+  return true;
+}
+
+@ @c
+static boolean mp_lig_table_argument_scanner (MP mp, mp_tfm_arguments *args) {
+  if (cur_cmd() != mp_comma)
+    return false;
+  mp_get_x_next (mp);
+  if ((cur_cmd() == mp_skip_to) && mp->lk_started) {
+    args->type = 17;
+    mp_get_tfm_argument (mp, 0, args);
+    mp_clear_tfm_argument (mp, 1, args);
+    return true;
+  }
+  if (cur_cmd() == mp_bchar_label) {
+    mp_clear_tfm_argument (mp, 0, args);
+    set_cur_cmd((mp_variable_type)mp_colon);
+  } else {
+    mp_back_input (mp);
+    mp_get_tfm_argument (mp, 0, args);
+  };
+  if ((cur_cmd() == mp_colon) || (cur_cmd() == mp_double_colon)) {
+    args->type = cur_cmd() == mp_colon ? 18 : 19;
+    set_cur_cmd (mp_comma);
+    mp_clear_tfm_argument (mp, 1, args);
+    return true;
+  }
+  if (cur_cmd() == mp_lig_kern_token) {
+    args->type = cur_mod() > 16 ? 16 : cur_mod();
+    mp_get_tfm_argument (mp, 1, args);
+  } else {
+    const char *hlp[] = { "I was looking for `=:' or `kern' here.", NULL };
+    mp_back_error (mp, "Illegal ligtable step", hlp, true);
+@.Illegal ligtable step@>;
+    args->type = 31;
+  }
+  mp->lk_started = true;
+  return true;
+}
+
+@ @c
+void mp_do_tfm_command_ext (MP mp) {
+  mp_tfm_arguments args;
+  args.a0string = args.a1string = true;
+  args.arg[0].string = args.arg[1].string = NULL;
+  int m;
+  switch (cur_mod()) {
+  case char_list_code:
+    mp_get_tfm_argument (mp, 0, &args);
+    mp->handle_tfm (mp, char_list_code, &args, mp_char_list_argument_scanner);
+    break;
+  case lig_table_code:
+    mp->lk_started = false;
+    set_cur_cmd(mp_comma);
+    mp->handle_tfm (mp, lig_table_code, &args, mp_lig_table_argument_scanner);
+    break;
+  case extensible_code:
+    mp_get_tfm_argument (mp, 0, &args);
+    if (cur_cmd() != mp_colon)
+      missing_extensible_punctuation (":");
+    set_cur_cmd(mp_comma);
+    mp->handle_tfm (mp, extensible_code, &args, mp_comma_argument_scanner);
+    break;
+  case header_byte_code:
+  case font_dimen_code:
+    m = cur_mod();
+    mp_get_tfm_argument (mp, 0, &args);
+    if (cur_cmd() != mp_colon) {
+      const char *hlp[] = {
+        "A colon should follow a headerbyte or fontinfo location.",
+         NULL };
+      mp_back_error (mp, "Missing `:' has been inserted", hlp, true);
+@.Missing `:'@>;
+    }
+    set_cur_cmd(mp_comma);
+    mp->handle_tfm (mp, m, &args, mp_comma_argument_scanner);
+    break;
+  }                             /* there are no other cases */
+  if (args.a0string) {
+    if (args.arg[0].string)
+      delete_str_ref (args.arg[0].string);
+  } else
+    free_number (args.arg[0].number);
+  if (args.a1string) {
+    if (args.arg[1].string)
+      delete_str_ref (args.arg[1].string);
+  } else
+    free_number (args.arg[1].number);
+}
 
 @ @c
 void mp_do_tfm_command (MP mp) {
