@@ -2095,7 +2095,8 @@ halfword scan_toks(boolean macro_def, boolean xpand)
                     store_new_token(end_match_token);
                     goto DONE;
                 }
-                if (t == nine_token) {
+                if (cur_cmd == mac_param_cmd) {
+                } else if (t == nine_token) {
                     print_err("You already have nine parameters");
                     help1("I'm going to ignore the # sign you just used.");
                     error();
